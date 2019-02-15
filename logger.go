@@ -65,7 +65,7 @@ func initLogger() {
 
 	mylogger, err := config.Build()
 	if err != nil {
-		fmt.Printf("Initialize zap logger error: %v", err)
+		fmt.Printf("Initialize zap logger error: %v\n", err)
 		os.Exit(1)
 	}
 
