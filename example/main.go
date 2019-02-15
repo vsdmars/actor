@@ -59,6 +59,8 @@ func test(ctx context.Context) {
 
 	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, Pipe1Actor)
 
+	time.Sleep(35 * time.Second)
+
 	for i := 0; i < 10; i++ {
 		pipe1.Send(fmt.Sprintf("message %d", i))
 	}

@@ -56,7 +56,6 @@ func NewActor(
 
 		actor.startStamp()
 
-		// increase idle by 1 second
 		go func() {
 			for {
 				select {
@@ -145,21 +144,34 @@ func (act *localActor) close() {
 
 func (act *localActor) resetIdle() {
 	atomic.StoreInt64(&act.idle, 0)
+
+	if act.timer != nil {
+		act.timer.Reset(10 * time.Second)
+	}
 }
 
 func (act *localActor) increaseIdle() {
-	// TODO: use time.Timer
-	time.Sleep(1 * time.Minute)
-	act.idle = atomic.AddInt64(&act.idle, int64(1*time.Minute))
+	if act.timer == nil {
+		act.timer = time.NewTimer(10 * time.Second)
+	}
+
+	passed := <-act.timer.C
+
+	act.idle = atomic.AddInt64(
+		&act.idle,
+		int64(time.Duration(passed.Second())*time.Second),
+	)
 
 	logger.Debug(
 		"actor idle seconds",
 		zap.String("service", serviceName),
 		zap.String("actor", act.name),
 		zap.String("uuid", act.uuid),
-		zap.Float64("minutes", time.Duration(
-			atomic.LoadInt64(&act.idle)).Minutes()),
+		zap.Float64("seconds", time.Duration(
+			atomic.LoadInt64(&act.idle)).Seconds()),
 	)
+
+	act.timer.Reset(10 * time.Second)
 }
 
 func (act *localActor) startStamp() {

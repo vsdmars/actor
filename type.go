@@ -20,6 +20,7 @@ type (
 	timing struct {
 		startTime time.Time
 		endTime   time.Time
+		timer     *time.Timer
 		idle      int64
 	}
 )
