@@ -31,7 +31,6 @@ func NewActor(
 	ctx, cancel := context.WithCancel(ctx)
 	// create Actor's message channel
 	pipe := make(chan interface{}, buffer)
-	logPipe := make(chan interface{}, buffer)
 
 	// escape Actor object
 	actor := Actor(
@@ -39,7 +38,7 @@ func NewActor(
 			name:         name,
 			uuid:         uuid.New().String(),
 			actorContext: actorContext{ctx, cancel},
-			channels:     channels{pipe, pipe, logPipe},
+			channels:     channels{pipe, pipe},
 		},
 	)
 
@@ -51,24 +50,19 @@ func NewActor(
 		defer func() {
 			regActor.deregister(actor)
 			actor.close()
+			actor.endStamp()
 		}()
 
-		// log receive message
+		actor.startStamp()
+
+		// increase idle by 1 second
 		go func() {
 			for {
 				select {
 				case <-actor.Done():
 					return
-				case m := <-pipe:
-					logger.Debug(
-						"receive",
-						zap.String("service", serviceName),
-						zap.String("actor", actor.Name()),
-						zap.String("uuid", actor.UUID()),
-						zap.Any("message", m),
-					)
-
-					logPipe <- m
+				default:
+					actor.increaseIdle()
 				}
 			}
 		}()
@@ -118,6 +112,8 @@ func (actor *localActor) Send(message interface{}) (err error) {
 	// do not use select on purpose.
 	actor.send <- message
 
+	actor.resetIdle()
+
 	logger.Debug(
 		"send",
 		zap.String("service", serviceName),
@@ -131,7 +127,7 @@ func (actor *localActor) Send(message interface{}) (err error) {
 
 // Receive receives message from actor
 func (actor *localActor) Receive() <-chan interface{} {
-	return actor.logChannel
+	return actor.receive
 }
 
 // Done Actor's context.done()
@@ -142,6 +138,44 @@ func (act *localActor) Done() <-chan struct{} {
 }
 
 func (act *localActor) close() {
-	close(act.logChannel)
 	close(act.send)
+}
+
+func (act *localActor) resetIdle() {
+	act.idle = 0
+}
+
+func (act *localActor) increaseIdle() {
+	time.Sleep(1 * time.Second)
+	act.idle += 1 * time.Second
+
+	logger.Debug(
+		"actor idle seconds",
+		zap.String("service", serviceName),
+		zap.String("actor", act.name),
+		zap.String("uuid", act.uuid),
+		zap.Float64("seconds", act.idle.Seconds()),
+	)
+}
+
+func (act *localActor) startStamp() {
+	act.startTime = time.Now()
+	logger.Debug(
+		"actor start time",
+		zap.String("service", serviceName),
+		zap.String("actor", act.name),
+		zap.String("uuid", act.uuid),
+		zap.String("time", act.startTime.Format(time.UnixDate)),
+	)
+}
+
+func (act *localActor) endStamp() {
+	act.endTime = time.Now()
+	logger.Debug(
+		"actor end time",
+		zap.String("service", serviceName),
+		zap.String("actor", act.name),
+		zap.String("uuid", act.uuid),
+		zap.String("time", act.endTime.Format(time.UnixDate)),
+	)
 }

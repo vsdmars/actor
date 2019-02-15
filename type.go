@@ -13,9 +13,8 @@ type (
 	}
 
 	channels struct {
-		send       chan<- interface{}
-		receive    <-chan interface{}
-		logChannel chan interface{}
+		send    chan<- interface{}
+		receive <-chan interface{}
 	}
 
 	timing struct {
@@ -59,7 +58,11 @@ type (
 		Send(message interface{}) error
 		Receive() <-chan interface{}
 		Done() <-chan struct{}
-		close() // close actor channel
+		close()        // close actor channel
+		resetIdle()    // reset actor idle duration
+		increaseIdle() // increase actor idle duration
+		startStamp()
+		endStamp()
 	}
 
 	HandleType func(Actor)

@@ -1,132 +1,107 @@
-{"level":"info","ts":1550200767.029087,"caller":"actor/runtime.go:51","msg":"actor registered","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05"}
-{"level":"info","ts":1550200767.0291414,"caller":"actor/runtime.go:51","msg":"actor registered","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b"}
-{"level":"info","ts":1550200767.0291889,"caller":"actor/runtime.go:51","msg":"actor registered","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f"}
-{"level":"debug","ts":1550200767.0292192,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 0"}
-{"level":"info","ts":1550200767.02921,"caller":"actor/runtime.go:95","msg":"get actor by name","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"actor retrieved"}
-{"level":"debug","ts":1550200767.0292299,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 1"}
-{"level":"debug","ts":1550200767.0292783,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 2"}
-{"level":"debug","ts":1550200767.0292954,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 3"}
-{"level":"debug","ts":1550200767.029286,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 0"}
-{"level":"debug","ts":1550200767.0293174,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 1"}
-{"level":"info","ts":1550200767.029248,"caller":"actor/runtime.go:95","msg":"get actor by name","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"actor retrieved"}
-{"level":"debug","ts":1550200767.0293374,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 4"}
-{"level":"info","ts":1550200767.0293424,"caller":"actor/runtime.go:95","msg":"get actor by name","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"actor retrieved"}
-{"level":"debug","ts":1550200767.0293505,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 5"}
+{"level":"info","ts":1550213164.8628,"caller":"actor/runtime.go:51","msg":"actor registered","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171"}
+{"level":"info","ts":1550213164.8628483,"caller":"actor/runtime.go:51","msg":"actor registered","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723"}
+{"level":"info","ts":1550213164.8628795,"caller":"actor/runtime.go:51","msg":"actor registered","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa"}
+{"level":"debug","ts":1550213164.8629057,"caller":"actor/localActor.go:163","msg":"actor start time","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","time":"Thu Feb 14 22:46:04 PST 2019"}
+{"level":"debug","ts":1550213164.8629324,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 0"}
+{"level":"debug","ts":1550213164.8629494,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 1"}
+{"level":"debug","ts":1550213164.8629637,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 2"}
+{"level":"debug","ts":1550213164.8629067,"caller":"actor/localActor.go:163","msg":"actor start time","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","time":"Thu Feb 14 22:46:04 PST 2019"}
+{"level":"debug","ts":1550213164.8629715,"caller":"actor/localActor.go:163","msg":"actor start time","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","time":"Thu Feb 14 22:46:04 PST 2019"}
+{"level":"info","ts":1550213164.8630068,"caller":"actor/runtime.go:95","msg":"get actor by name","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"actor retrieved"}
+{"level":"info","ts":1550213164.8630176,"caller":"actor/runtime.go:95","msg":"get actor by name","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"actor retrieved"}
 Pipe1 received message: message 0
-{"level":"debug","ts":1550200767.0293305,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 2"}
 Pipe1 received message: message 1
 Pipe1 received message: message 2
-{"level":"debug","ts":1550200767.029372,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 3"}
-{"level":"debug","ts":1550200767.0293834,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 4"}
-{"level":"debug","ts":1550200767.029394,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 5"}
-{"level":"debug","ts":1550200767.0294042,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 6"}
 Pipe1 received message: message 3
-{"level":"debug","ts":1550200767.0294042,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 2"}
+{"level":"info","ts":1550213164.8629856,"caller":"actor/runtime.go:95","msg":"get actor by name","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"actor retrieved"}
+LOG MESSAGE: pipe1 got message: message 0
+{"level":"debug","ts":1550213164.8631027,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 0"}
+Pipe2 received message: message 3
+{"level":"debug","ts":1550213164.8631055,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 3"}
+Pipe2 received message: message 0
+{"level":"debug","ts":1550213164.8631425,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 3"}
+{"level":"debug","ts":1550213164.8631644,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 4"}
+{"level":"debug","ts":1550213164.8631797,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 5"}
+{"level":"debug","ts":1550213164.8631933,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 6"}
+{"level":"debug","ts":1550213164.8632052,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 7"}
 Pipe1 received message: message 4
 Pipe1 received message: message 5
+{"level":"debug","ts":1550213164.8633785,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 0"}
+{"level":"debug","ts":1550213164.863407,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 3"}
+LOG MESSAGE: pipe2 got message: message 0
+{"level":"debug","ts":1550213164.8633807,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 1"}
+LOG MESSAGE: pipe1 got message: message 1
+{"level":"debug","ts":1550213164.8634222,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 1"}
+LOG MESSAGE: pipe2 got message: message 3
+{"level":"debug","ts":1550213164.8634658,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 2"}
+LOG MESSAGE: pipe1 got message: message 2
+{"level":"debug","ts":1550213164.8634682,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 5"}
+Pipe2 received message: message 1
+{"level":"debug","ts":1550213164.8634772,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 8"}
+Pipe2 received message: message 5
+Pipe2 received message: message 4
+{"level":"debug","ts":1550213164.8634973,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","message":"message 9"}
+{"level":"debug","ts":1550213164.8635104,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 4"}
+{"level":"debug","ts":1550213164.8631468,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 0"}
+LOG MESSAGE: pipe1 got message: message 5
+{"level":"debug","ts":1550213164.8635201,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 5"}
+LOG MESSAGE: pipe2 got message: message 4
+{"level":"debug","ts":1550213164.8635416,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 4"}
+LOG MESSAGE: pipe1 got message: message 4
+{"level":"debug","ts":1550213164.8635457,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 2"}
+LOG MESSAGE: pipe1 got message: message 3
+LOG MESSAGE: pipe2 got message: message 1
 Pipe1 received message: message 6
-{"level":"debug","ts":1550200767.0294194,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 6"}
-{"level":"debug","ts":1550200767.0296342,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 7"}
-{"level":"debug","ts":1550200767.0296497,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 8"}
-{"level":"debug","ts":1550200767.0296621,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 9"}
-{"level":"debug","ts":1550200767.029449,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 1"}
-{"level":"debug","ts":1550200767.0294385,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 2"}
-{"level":"debug","ts":1550200767.0300376,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 7"}
-Pipe2 received message: message 2
-{"level":"debug","ts":1550200767.0300748,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 8"}
-{"level":"debug","ts":1550200767.0300376,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 3"}
-{"level":"debug","ts":1550200767.0300884,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 6"}
 Pipe1 received message: message 7
 Pipe1 received message: message 8
-{"level":"debug","ts":1550200767.0294867,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 1"}
-{"level":"debug","ts":1550200767.030125,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 2"}
-LOG MESSAGE: pipe1 got message: message 1
-{"level":"debug","ts":1550200767.0301397,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 0"}
-LOG MESSAGE: pipe1 got message: message 2
-LOG MESSAGE: pipe1 got message: message 0
-{"level":"debug","ts":1550200767.0301514,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 3"}
-{"level":"debug","ts":1550200767.0302093,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 4"}
-{"level":"debug","ts":1550200767.030218,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 6"}
-{"level":"debug","ts":1550200767.030223,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 5"}
-{"level":"debug","ts":1550200767.0302396,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 6"}
-{"level":"debug","ts":1550200767.030248,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 7"}
-LOG MESSAGE: pipe1 got message: message 3
-LOG MESSAGE: pipe1 got message: message 4
-LOG MESSAGE: pipe1 got message: message 5
-LOG MESSAGE: pipe1 got message: message 6
-{"level":"debug","ts":1550200767.0303133,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 2"}
-{"level":"debug","ts":1550200767.0294971,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 2"}
-{"level":"debug","ts":1550200767.0302513,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 2"}
-{"level":"debug","ts":1550200767.0303419,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 7"}
-{"level":"debug","ts":1550200767.0303533,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 8"}
-LOG MESSAGE: pipe2 got message: message 2
-LOG MESSAGE: pipe1 got message: message 7
-LOG MESSAGE: pipe1 got message: message 8
-{"level":"debug","ts":1550200767.0295217,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 0"}
-{"level":"debug","ts":1550200767.0295887,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 3"}
-{"level":"debug","ts":1550200767.0294714,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 1"}
-{"level":"debug","ts":1550200767.0300581,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 1"}
-{"level":"debug","ts":1550200767.0304985,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 0"}
-{"level":"debug","ts":1550200767.0305119,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 3"}
-{"level":"debug","ts":1550200767.0305243,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 6"}
-{"level":"debug","ts":1550200767.0305347,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 4"}
-{"level":"debug","ts":1550200767.030568,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 7"}
-{"level":"debug","ts":1550200767.03059,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 4"}
-{"level":"debug","ts":1550200767.0306056,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 5"}
-Pipe2 received message: message 1
-{"level":"debug","ts":1550200767.0300884,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f","message":"message 9"}
-Pipe2 received message: message 0
+{"level":"debug","ts":1550213164.863586,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 4"}
 Pipe1 received message: message 9
-{"level":"debug","ts":1550200767.0306485,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 0"}
-{"level":"debug","ts":1550200767.0306578,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 0"}
-{"level":"debug","ts":1550200767.030669,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 8"}
-{"level":"debug","ts":1550200767.030186,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 5"}
-LOG MESSAGE: pipe2 got message: message 0
-{"level":"debug","ts":1550200767.0302806,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 8"}
-{"level":"debug","ts":1550200767.0295184,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 0"}
-{"level":"debug","ts":1550200767.0301847,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 4"}
-Pipe2 received message: message 3
-{"level":"debug","ts":1550200767.0307152,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 1"}
+{"level":"debug","ts":1550213164.8636,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 1"}
+{"level":"debug","ts":1550213164.863588,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 3"}
+Pipe2 received message: message 2
 Pipe2 received message: message 6
-{"level":"debug","ts":1550200767.0307243,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 1"}
-Pipe2 received message: message 4
-{"level":"debug","ts":1550200767.0307329,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 5"}
-{"level":"debug","ts":1550200767.0307403,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 8"}
-{"level":"debug","ts":1550200767.0307465,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 7"}
-{"level":"debug","ts":1550200767.0307524,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 9"}
-Pipe2 received message: message 5
-Pipe2 received message: message 8
-Pipe2 received message: message 7
 Pipe2 received message: message 9
-{"level":"debug","ts":1550200767.0307717,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 4"}
-{"level":"debug","ts":1550200767.0307858,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 4"}
-{"level":"debug","ts":1550200767.0307968,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 9"}
-{"level":"debug","ts":1550200767.0307972,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 9"}
-{"level":"debug","ts":1550200767.0308096,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 9"}
-{"level":"debug","ts":1550200767.0308385,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b","message":"message 9"}
-{"level":"debug","ts":1550200767.0308385,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe1 got message: message 9"}
-{"level":"debug","ts":1550200767.0308697,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 5"}
-{"level":"debug","ts":1550200767.0308797,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 3"}
-{"level":"debug","ts":1550200767.0308928,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 3"}
-{"level":"debug","ts":1550200767.0309017,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 8"}
-LOG MESSAGE: pipe2 got message: message 1
-LOG MESSAGE: pipe2 got message: message 4
-LOG MESSAGE: pipe2 got message: message 9
-LOG MESSAGE: pipe1 got message: message 9
-LOG MESSAGE: pipe2 got message: message 3
-{"level":"debug","ts":1550200767.030929,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 5"}
-{"level":"debug","ts":1550200767.0309365,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 8"}
-{"level":"debug","ts":1550200767.030943,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 6"}
-{"level":"debug","ts":1550200767.0309494,"caller":"actor/localActor.go:62","msg":"receive","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 7"}
-{"level":"debug","ts":1550200767.0309396,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 6"}
+{"level":"debug","ts":1550213164.8636327,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 5"}
 LOG MESSAGE: pipe2 got message: message 5
-LOG MESSAGE: pipe2 got message: message 8
+{"level":"debug","ts":1550213164.8636436,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 6"}
+LOG MESSAGE: pipe2 got message: message 9
+{"level":"debug","ts":1550213164.863644,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 9"}
+LOG MESSAGE: pipe1 got message: message 7
+{"level":"debug","ts":1550213164.8636715,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 9"}
+LOG MESSAGE: pipe2 got message: message 2
+{"level":"debug","ts":1550213164.8636854,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 7"}
+{"level":"debug","ts":1550213164.8637133,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 2"}
+{"level":"debug","ts":1550213164.863728,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 7"}
 LOG MESSAGE: pipe2 got message: message 6
+{"level":"debug","ts":1550213164.863733,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 6"}
+LOG MESSAGE: pipe1 got message: message 6
+{"level":"debug","ts":1550213164.8637373,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 6"}
+LOG MESSAGE: pipe1 got message: message 8
+LOG MESSAGE: pipe1 got message: message 9
+{"level":"debug","ts":1550213164.8637624,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","message":"message 8"}
+Pipe2 received message: message 7
+Pipe2 received message: message 8
+{"level":"debug","ts":1550213164.8637865,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 8"}
+{"level":"debug","ts":1550213164.8637953,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe1 got message: message 9"}
+{"level":"debug","ts":1550213164.8638172,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 7"}
 LOG MESSAGE: pipe2 got message: message 7
-{"level":"debug","ts":1550200767.0309834,"caller":"actor/localActor.go:118","msg":"send","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05","message":"pipe2 got message: message 7"}
+LOG MESSAGE: pipe2 got message: message 8
+{"level":"debug","ts":1550213164.8638213,"caller":"actor/localActor.go:117","msg":"send","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","message":"pipe2 got message: message 8"}
+{"level":"debug","ts":1550213165.8632247,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","seconds":1}
+{"level":"debug","ts":1550213165.8632765,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","seconds":1}
+{"level":"debug","ts":1550213165.8632755,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","seconds":1}
+{"level":"debug","ts":1550213166.8636367,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","seconds":2}
+{"level":"debug","ts":1550213166.8637342,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","seconds":2}
+{"level":"debug","ts":1550213166.863632,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","seconds":2}
 Sayonara, my friends~ -- Pipe1Actor
 Sayonara, my friends~ -- logActor
 Sayonara, my friends~ -- Pipe2Actor
-{"level":"info","ts":1550200770.0308914,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"pipe1","uuid":"0ebbcdcd-025c-4c57-85ae-9862a615870f"}
-{"level":"info","ts":1550200770.0309374,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"logger","uuid":"f55defa4-b920-4bfe-a582-6bb70eb96d05"}
-{"level":"info","ts":1550200770.0309541,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"pipe2","uuid":"fc5bae7f-7547-4685-be03-645808229e2b"}
+{"level":"info","ts":1550213167.863908,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa"}
+{"level":"debug","ts":1550213167.8639045,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","seconds":3}
+{"level":"debug","ts":1550213167.8640323,"caller":"actor/localActor.go:174","msg":"actor end time","service":"actor","actor":"pipe1","uuid":"b2ebba87-6b27-441a-9001-21adf73cb3aa","time":"Thu Feb 14 22:46:07 PST 2019"}
+{"level":"info","ts":1550213167.8640668,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171"}
+{"level":"debug","ts":1550213167.8641057,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","seconds":3}
+{"level":"debug","ts":1550213167.8640735,"caller":"actor/localActor.go:152","msg":"actor idle seconds","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","seconds":3}
+{"level":"info","ts":1550213167.8642125,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723"}
+{"level":"debug","ts":1550213167.8642764,"caller":"actor/localActor.go:174","msg":"actor end time","service":"actor","actor":"pipe2","uuid":"f13fb6ec-a50a-4631-8d0b-15d631c1f723","time":"Thu Feb 14 22:46:07 PST 2019"}
+{"level":"debug","ts":1550213167.8641586,"caller":"actor/localActor.go:174","msg":"actor end time","service":"actor","actor":"logger","uuid":"54eb2c66-48fa-470f-9e15-880a6db9c171","time":"Thu Feb 14 22:46:07 PST 2019"}
