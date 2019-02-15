@@ -1,27 +1,4 @@
-2.
-Introduce Actor Broker handles Actor's life cycle.
-Actor.member functions should be concurrent safe, re-register itself back to the pool
-**
-Use Actor's name and UUID as key (hash them as key, compact.)
-
-Focus on General use case.
-
-Actor should have:
-    4. capacity information (number of default goroutines it supports)
-    5. Cancel should remove the canceled actor from registry. // atomic
-    6, Actor by default is stateless, if stateful, persists it's state which
-        can be loaded through Restart.
-        (using a PersistActor to persist data.)
-    7. smarter design for writing to close channel...
-    8. Send/receive should NOT block.
-    9. Actor should die if idled(heuristic) in X seconds.
-    10. Stateful or not. If former, which has .Save() member function to persist the state.
-        (to local sqlite or PersistActor, which could either write to DB
-        of Redis)
-
-
-
-2.1
+Payload design:
 Message / payload should have Actors[address] in metadata, like route
 modifying MAC address for next hop. Including Version information
     (Match to REST API version/gRPC version)
@@ -35,45 +12,15 @@ Message / payload can have a actor path field which records the
     actors that has processed this message. (only record the previous
     actor, since actor has and trace info help debugging the path.)
 
-exp backoff for blocking Actor
-https://godoc.org/github.com/cenkalti/backoff
-https://github.com/eapache/go-resiliency
-
-***
-Don't new errors, make it variable.
-
---
-3.
-Snapshot service:
-when process ends, snapshot the current status into DB.
-(sqlite, yes, sqlite should be used anyway)
-
-
-
---
-4. trace enabled
-
-
---
-5. k8s probe/metrics
-
-
---
-6. validates structs
+Payload version:
 config versioning https://github.com/hashicorp/go-version
 
-
 --
-7. unit test only on onTap logic for now.
-
+1. trace enabled
 
 // ------------------------------------------------------------------
 Tada moment:
 1. gRPC between daemon, actors amount processes
-2. light REST interface
-3. dynamic creates next actor process inside k8s, actor dies if idles
-4. integrate with tensorflow/ actor for tf.
-
 
 --- Design Principle ---
 1.
