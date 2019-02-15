@@ -2,6 +2,7 @@ package actor
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 
 	"github.com/google/uuid"
@@ -89,7 +90,7 @@ func (actor *localActor) UUID() string {
 
 // Idle returns actor's idle time
 func (actor *localActor) Idle() time.Duration {
-	return actor.idle
+	return time.Duration(atomic.LoadInt64(&actor.idle))
 }
 
 // Send sends message to actor
@@ -143,19 +144,21 @@ func (act *localActor) close() {
 }
 
 func (act *localActor) resetIdle() {
-	act.idle = 0
+	atomic.StoreInt64(&act.idle, 0)
 }
 
 func (act *localActor) increaseIdle() {
-	time.Sleep(1 * time.Second)
-	act.idle += 1 * time.Second
+	// TODO: use time.Timer
+	time.Sleep(1 * time.Minute)
+	act.idle = atomic.AddInt64(&act.idle, int64(1*time.Minute))
 
 	logger.Debug(
 		"actor idle seconds",
 		zap.String("service", serviceName),
 		zap.String("actor", act.name),
 		zap.String("uuid", act.uuid),
-		zap.Float64("seconds", act.idle.Seconds()),
+		zap.Float64("minutes", time.Duration(
+			atomic.LoadInt64(&act.idle)).Minutes()),
 	)
 }
 
