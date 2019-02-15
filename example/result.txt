@@ -403,3 +403,4 @@ Sayonara, my friends~ -- Pipe1Actor
 {"level":"debug","ts":1550269746.8087811,"caller":"actor/localActor.go:190","msg":"actor end time","service":"actor","actor":"pipe2","uuid":"1273f84f-47a3-4ff5-9091-7a9188d3ebf0","time":"Fri Feb 15 14:29:06 PST 2019"}
 {"level":"info","ts":1550269746.8088284,"caller":"actor/runtime.go:79","msg":"actor deregistered","service":"actor","actor":"pipe1","uuid":"36cbceac-74d4-4282-a871-eadd564a78dd"}
 {"level":"debug","ts":1550269746.8088899,"caller":"actor/localActor.go:190","msg":"actor end time","service":"actor","actor":"pipe1","uuid":"36cbceac-74d4-4282-a871-eadd564a78dd","time":"Fri Feb 15 14:29:06 PST 2019"}
+Found 11 data race(s)
