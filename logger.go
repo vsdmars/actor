@@ -16,7 +16,7 @@ func init() {
 }
 
 // Sync sync logger output
-func Sync() {
+func logSync() {
 	// ignore logger Sync error
 	logger.Sync()
 }
@@ -27,6 +27,7 @@ func Sync() {
 func SetLogger(l *zap.Logger) {
 	if l != nil {
 		logger.Logger = l
+		logger.atom = nil
 		logger.provided = true
 		return
 	}

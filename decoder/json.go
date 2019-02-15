@@ -1,4 +1,4 @@
-package actor
+package decoder
 
 import (
 	"encoding/json"

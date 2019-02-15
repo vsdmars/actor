@@ -25,8 +25,5 @@
 # Ignore outputs generated during Bazel bootstrapping.
 /output/
 
-# todo
-TODO
-
 # binary
-vstmp
+example/example

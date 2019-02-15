@@ -2,7 +2,6 @@ package actor
 
 import (
 	"context"
-	"net"
 	"sync"
 	"time"
 )
@@ -14,21 +13,9 @@ type (
 	}
 
 	channels struct {
-		send    chan<- interface{}
-		receive <-chan interface{}
-	}
-
-	host struct {
-		dn    net.NS // domain name
-		ipv4  net.IP // ipv4
-		ipv6  net.IP // ipv6
-		proto string // type not settled yet, e.g: gRPC / websocket / https / http / QUIC
-	}
-
-	// event sourcing, play back queue log from persisted logs
-	persist struct {
-		persistFn func(data interface{}) error // use json.Marshal to store data
-		pure      bool                         // pure function/actor or not. (stateful/stateless)
+		send       chan<- interface{}
+		receive    <-chan interface{}
+		logChannel chan interface{}
 	}
 
 	timing struct {
@@ -36,33 +23,44 @@ type (
 		endTime   time.Time
 		idle      time.Duration
 	}
-
-	recycle struct {
-		idleThreshold time.Duration // max idle time to recycle
-		recycle       bool          // should actor die after idle for a period
-	}
 )
 
 type (
 	// Actor provides several member functions to interact with Actor
-	Actor struct {
+	localActor struct {
 		name string
 		uuid string
 		actorContext
-		host
-		persist
-		recycle
 		timing
 		channels
+	}
+
+	remoteActor struct {
+		name string
+		uuid string
+		actorContext
+		timing
 	}
 )
 
 type (
 	registeredActor struct {
-		mLock     sync.Mutex
+		rwLock    sync.RWMutex
 		nameUUID  map[string]string
-		uuidActor map[string]*Actor
+		uuidActor map[string]Actor
+	}
+)
+
+type (
+	Actor interface {
+		Name() string
+		UUID() string
+		Idle() time.Duration
+		Send(message interface{}) error
+		Receive() <-chan interface{}
+		Done() <-chan struct{}
+		close() // close actor channel
 	}
 
-	handleType func(*Actor)
+	HandleType func(Actor)
 )
