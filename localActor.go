@@ -138,6 +138,7 @@ func (act *localActor) Done() <-chan struct{} {
 }
 
 func (act *localActor) close() {
+	act.cancel()
 	close(act.send)
 }
 
