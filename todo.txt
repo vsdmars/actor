@@ -1,6 +1,10 @@
 **
 actor should honor graceful shutdown, by using:
 https://github.com/eapache/go-resiliency
+https://github.com/eapache/go-resiliency/blob/master/deadline/deadline.go#L30
+duh~ of course at application level we can't forcefully terminate the running
+goroutine~
+
 
 1. trace enabled
 
