@@ -1,21 +1,7 @@
-Payload design:
-Message / payload should have Actors[address] in metadata, like route
-modifying MAC address for next hop. Including Version information
-    (Match to REST API version/gRPC version)
+**
+actor should honor graceful shutdown, by using:
+https://github.com/eapache/go-resiliency
 
-Message / payload should have 'priority' tag (like tcp's urgent pointer)
-Message / payload should have UUID
-Message / payload should have timestamp
-Message / payload should have version (message version)
-encode/encrypt section for later version.
-Message / payload can have a actor path field which records the
-    actors that has processed this message. (only record the previous
-    actor, since actor has and trace info help debugging the path.)
-
-Payload version:
-config versioning https://github.com/hashicorp/go-version
-
---
 1. trace enabled
 
 // ------------------------------------------------------------------
@@ -43,3 +29,22 @@ Don't burden the main path with exceptional cases
 
 7.
 Non-blocking in the message path
+
+
+---------------------------------
+Payload design(for company Nxxxxx):
+Message / payload should have Actors[address] in metadata, like route
+modifying MAC address for next hop. Including Version information
+    (Match to REST API version/gRPC version)
+
+Message / payload should have 'priority' tag (like tcp's urgent pointer)
+Message / payload should have UUID
+Message / payload should have timestamp
+Message / payload should have version (message version)
+encode/encrypt section for later version.
+Message / payload can have a actor path field which records the
+    actors that has processed this message. (only record the previous
+    actor, since actor has and trace info help debugging the path.)
+
+Payload version:
+config versioning https://github.com/hashicorp/go-version
