@@ -1,4 +1,4 @@
-rmqclient_
+actor_
 ----------
 
 .. All external links are here
