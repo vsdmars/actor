@@ -8,20 +8,21 @@ import (
 
 type (
 	actorContext struct {
-		ctx    context.Context
+		ctx    context.Context // clean up by .cancel it
 		cancel context.CancelFunc
 	}
 
 	channels struct {
-		send    chan<- interface{}
-		receive <-chan interface{}
+		send    chan<- interface{} // clean up by .close it
+		receive <-chan interface{} // clean up by .close it
 	}
 
 	timing struct {
 		startTime time.Time
 		endTime   time.Time
-		timer     *time.Timer
-		idle      int64
+		timer     *time.Timer // clean up by .Stop it
+		// timer atomic.Value // stores *time.Timer instance, clean up by .Stop it
+		idle int64
 	}
 )
 

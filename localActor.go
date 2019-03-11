@@ -11,7 +11,7 @@ import (
 
 // NewActor creates new local actor
 //
-// ctx: caller's context
+// ctx: caller's context, able to cancel created actor
 //
 // name: actor's name
 //
@@ -19,10 +19,11 @@ import (
 //
 // callbackFn: actor handler
 func NewActor(
-	ctx context.Context,
-	name string,
-	buffer int,
-	callbackFn HandleType) (Actor, error) {
+	ctx context.Context, // caller's context, able to cancel created actor.
+	name string, // actor's name
+	buffer int, // actor's channel buffer
+	callbackFn HandleType, // actor's handler
+) (Actor, error) {
 
 	if buffer < 0 {
 		return nil, ChannelBufferError
@@ -33,7 +34,7 @@ func NewActor(
 	// create Actor's message channel
 	pipe := make(chan interface{}, buffer)
 
-	// escape Actor object
+	// escape Actor object, store ptr to localActor instance into Actor interface
 	actor := Actor(
 		&localActor{
 			name:         name,
@@ -44,6 +45,16 @@ func NewActor(
 	)
 
 	if err := regActor.register(actor); err != nil {
+		actor.close() // clean up actor
+
+		logger.Debug(
+			"clean up tmp actor",
+			zap.String("service", serviceName),
+			zap.String("actor", actor.Name()),
+			zap.String("uuid", actor.UUID()),
+			zap.String("error", err.Error()),
+		)
+
 		return nil, err
 	}
 
@@ -56,16 +67,7 @@ func NewActor(
 
 		actor.startStamp()
 
-		go func() {
-			for {
-				select {
-				case <-actor.Done():
-					return
-				default:
-					actor.increaseIdle()
-				}
-			}
-		}()
+		go actor.increaseIdle()
 
 		// block call
 		// return closes the channel, actor dies
@@ -108,21 +110,33 @@ func (actor *localActor) Send(message interface{}) (err error) {
 		}
 	}()
 
-	// block, force golang scheduler to process message.
-	// do not use select on purpose.
-	actor.send <- message
+	select {
+	case <-actor.Done():
+		logger.Error(
+			"actor is cancelled",
+			zap.String("service", serviceName),
+			zap.String("actor", actor.name),
+			zap.String("uuid", actor.uuid),
+			zap.String("error", "actor is cancelled"),
+		)
 
-	actor.resetIdle()
+		return
+	default:
+		// block, force golang scheduler to process message.
+		// do not use select on purpose.
+		actor.send <- message
+		actor.resetIdle()
 
-	logger.Debug(
-		"send",
-		zap.String("service", serviceName),
-		zap.String("actor", actor.Name()),
-		zap.String("uuid", actor.UUID()),
-		zap.Any("message", message),
-	)
+		logger.Debug(
+			"send",
+			zap.String("service", serviceName),
+			zap.String("actor", actor.Name()),
+			zap.String("uuid", actor.UUID()),
+			zap.Any("message", message),
+		)
 
-	return
+		return
+	}
 }
 
 // Receive receives message from actor
@@ -139,15 +153,14 @@ func (act *localActor) Done() <-chan struct{} {
 
 func (act *localActor) close() {
 	act.cancel()
-	close(act.send)
+	// https://stackoverflow.com/a/8593986
+	// do not close actor's channel avoid race condition
+	// it's not a resource leak if channel remains open
+	// close(act.send)
 }
 
 func (act *localActor) resetIdle() {
 	atomic.StoreInt64(&act.idle, 0)
-
-	if act.timer != nil {
-		act.timer.Reset(10 * time.Second)
-	}
 }
 
 func (act *localActor) increaseIdle() {
@@ -155,28 +168,39 @@ func (act *localActor) increaseIdle() {
 		act.timer = time.NewTimer(10 * time.Second)
 	}
 
-	passed := <-act.timer.C
+	for {
+		select {
+		case <-act.Done():
+			// clean up the timer
+			if act.timer != nil {
+				act.timer.Stop()
+			}
 
-	act.idle = atomic.AddInt64(
-		&act.idle,
-		int64(time.Duration(passed.Second())*time.Second),
-	)
+			return
+		case passed := <-act.timer.C:
+			atomic.AddInt64(
+				&act.idle,
+				int64(time.Duration(passed.Second())*time.Second),
+			)
 
-	logger.Debug(
-		"actor idle seconds",
-		zap.String("service", serviceName),
-		zap.String("actor", act.name),
-		zap.String("uuid", act.uuid),
-		zap.Float64("seconds", time.Duration(
-			atomic.LoadInt64(&act.idle)).Seconds()),
-	)
+			logger.Debug(
+				"actor idle seconds",
+				zap.String("service", serviceName),
+				zap.String("actor", act.name),
+				zap.String("uuid", act.uuid),
+				zap.Float64("seconds", time.Duration(
+					atomic.LoadInt64(&act.idle)).Seconds()),
+			)
 
-	act.timer.Reset(10 * time.Second)
+			act.timer.Reset(10 * time.Second)
+		}
+	}
 }
 
 func (act *localActor) startStamp() {
 	act.startTime = time.Now()
-	logger.Debug(
+
+	logger.Info(
 		"actor start time",
 		zap.String("service", serviceName),
 		zap.String("actor", act.name),
@@ -187,11 +211,13 @@ func (act *localActor) startStamp() {
 
 func (act *localActor) endStamp() {
 	act.endTime = time.Now()
-	logger.Debug(
+
+	logger.Info(
 		"actor end time",
 		zap.String("service", serviceName),
 		zap.String("actor", act.name),
 		zap.String("uuid", act.uuid),
 		zap.String("time", act.endTime.Format(time.UnixDate)),
 	)
+
 }
