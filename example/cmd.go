@@ -91,10 +91,7 @@ func main() {
 	actor.NewActor(ctx, "logger", 3, logActor)
 
 	// starts test
-	go func() {
-		test(ctx)
-		cancel()
-	}()
+	go test(ctx)
 
 	<-ctx.Done()
 	// waits seconds for actors to safely clean up (graceful shutdown)
