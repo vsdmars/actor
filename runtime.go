@@ -13,6 +13,25 @@ var (
 
 // Cleanup cleans up the use of actor library
 func Cleanup() {
+	defer regActor.rwLock.RUnlock()
+	regActor.rwLock.RLock()
+
+	logger.Info(
+		"Actor Service Cleanup",
+		zap.String("service", serviceName),
+	)
+
+	for _, actor := range regActor.uuidActor {
+		actor.close()
+
+		logger.Info(
+			"Actor closed due to Cleanup",
+			zap.String("service", serviceName),
+			zap.String("actor", actor.Name()),
+			zap.String("uuid", actor.UUID()),
+		)
+	}
+
 	logSync()
 }
 
@@ -38,6 +57,7 @@ func (r *registeredActor) register(actor Actor) error {
 	if _, ok := r.nameUUID[actor.Name()]; ok {
 		logger.Error(
 			"register Actor failed",
+			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
 			zap.String("uuid", actor.UUID()),
 			zap.String("message", "actor already registered by name"),
@@ -66,6 +86,7 @@ func (r *registeredActor) deregister(actor Actor) error {
 	if _, ok := r.nameUUID[actor.Name()]; !ok {
 		logger.Error(
 			"deregister Actor failed",
+			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
 			zap.String("uuid", actor.UUID()),
 			zap.String("message", "actor haven't registered by name"),
@@ -95,6 +116,7 @@ func (r *registeredActor) getByName(name string) (Actor, error) {
 		if actor, ok := r.uuidActor[uuid]; ok {
 			logger.Info(
 				"get actor by name",
+				zap.String("service", serviceName),
 				zap.String("actor", name),
 				zap.String("uuid", uuid),
 				zap.String("message", "actor retrieved"),
@@ -106,6 +128,7 @@ func (r *registeredActor) getByName(name string) (Actor, error) {
 
 	logger.Error(
 		"get actor by name failed",
+		zap.String("service", serviceName),
 		zap.String("actor", name),
 		zap.String("message", "actor not registered"),
 	)
@@ -120,6 +143,7 @@ func (r *registeredActor) getByUUID(uuid string) (Actor, error) {
 	if actor, ok := r.uuidActor[uuid]; ok {
 		logger.Info(
 			"get actor by uuid",
+			zap.String("service", serviceName),
 			zap.String("uuid", uuid),
 			zap.String("message", "actor retrieved"),
 		)
@@ -129,6 +153,7 @@ func (r *registeredActor) getByUUID(uuid string) (Actor, error) {
 
 	logger.Error(
 		"get actor by uuid failed",
+		zap.String("service", serviceName),
 		zap.String("uuid", uuid),
 		zap.String("message", "actor not registered"),
 	)

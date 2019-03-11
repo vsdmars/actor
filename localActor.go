@@ -153,9 +153,10 @@ func (actor *localActor) Done() <-chan struct{} {
 
 func (actor *localActor) close() {
 	actor.cancel()
-	// https://stackoverflow.com/a/8593986
+	// https://stackoverflow.com/a/8593986 Not a precise answer but ok.
 	// do not close actor's channel avoid race condition
 	// it's not a resource leak if channel remains open
+	// Why? hey, hey, everything inside the channel is copied value
 	// close(act.send)
 }
 

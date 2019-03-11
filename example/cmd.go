@@ -94,6 +94,8 @@ func main() {
 	go test(ctx)
 
 	<-ctx.Done()
+	actor.Cleanup()
+
 	// waits seconds for actors to safely clean up (graceful shutdown)
 	// http://vsdmars.blogspot.com/2019/02/golangdesign-graceful-shutdown.html
 	time.Sleep(3 * time.Second)
