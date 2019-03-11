@@ -11,6 +11,7 @@ var (
 	}
 )
 
+// Cleanup cleans up the use of actor library
 func Cleanup() {
 	logSync()
 }
@@ -42,7 +43,7 @@ func (r *registeredActor) register(actor Actor) error {
 			zap.String("message", "actor already registered by name"),
 		)
 
-		return RegisterActorError
+		return ErrRegisterActor
 	}
 
 	r.nameUUID[actor.Name()] = actor.UUID()
@@ -70,7 +71,7 @@ func (r *registeredActor) deregister(actor Actor) error {
 			zap.String("message", "actor haven't registered by name"),
 		)
 
-		return RegisterActorError
+		return ErrRegisterActor
 	}
 
 	delete(r.uuidActor, actor.UUID())
@@ -109,7 +110,7 @@ func (r *registeredActor) getByName(name string) (Actor, error) {
 		zap.String("message", "actor not registered"),
 	)
 
-	return nil, RetrieveActorError
+	return nil, ErrRetrieveActor
 }
 
 func (r *registeredActor) getByUUID(uuid string) (Actor, error) {
@@ -132,5 +133,5 @@ func (r *registeredActor) getByUUID(uuid string) (Actor, error) {
 		zap.String("message", "actor not registered"),
 	)
 
-	return nil, RetrieveActorError
+	return nil, ErrRetrieveActor
 }

@@ -26,7 +26,7 @@ func NewActor(
 ) (Actor, error) {
 
 	if buffer < 0 {
-		return nil, ChannelBufferError
+		return nil, ErrChannelBuffer
 	}
 
 	// create Actor's context
@@ -106,7 +106,7 @@ func (actor *localActor) Send(message interface{}) (err error) {
 				zap.Any("recover", r),
 			)
 
-			err = ChannelClosedError
+			err = ErrChannelClosed
 		}
 	}()
 
@@ -147,77 +147,77 @@ func (actor *localActor) Receive() <-chan interface{} {
 // Done Actor's context.done()
 //
 // context.done() is used for cleaning up Actor resource
-func (act *localActor) Done() <-chan struct{} {
-	return act.ctx.Done()
+func (actor *localActor) Done() <-chan struct{} {
+	return actor.ctx.Done()
 }
 
-func (act *localActor) close() {
-	act.cancel()
+func (actor *localActor) close() {
+	actor.cancel()
 	// https://stackoverflow.com/a/8593986
 	// do not close actor's channel avoid race condition
 	// it's not a resource leak if channel remains open
 	// close(act.send)
 }
 
-func (act *localActor) resetIdle() {
-	atomic.StoreInt64(&act.idle, 0)
+func (actor *localActor) resetIdle() {
+	atomic.StoreInt64(&actor.idle, 0)
 }
 
-func (act *localActor) increaseIdle() {
-	if act.timer == nil {
-		act.timer = time.NewTimer(10 * time.Second)
+func (actor *localActor) increaseIdle() {
+	if actor.timer == nil {
+		actor.timer = time.NewTimer(10 * time.Second)
 	}
 
 	for {
 		select {
-		case <-act.Done():
+		case <-actor.Done():
 			// clean up the timer
-			if act.timer != nil {
-				act.timer.Stop()
+			if actor.timer != nil {
+				actor.timer.Stop()
 			}
 
 			return
-		case passed := <-act.timer.C:
+		case passed := <-actor.timer.C:
 			atomic.AddInt64(
-				&act.idle,
+				&actor.idle,
 				int64(time.Duration(passed.Second())*time.Second),
 			)
 
 			logger.Debug(
 				"actor idle seconds",
 				zap.String("service", serviceName),
-				zap.String("actor", act.name),
-				zap.String("uuid", act.uuid),
+				zap.String("actor", actor.name),
+				zap.String("uuid", actor.uuid),
 				zap.Float64("seconds", time.Duration(
-					atomic.LoadInt64(&act.idle)).Seconds()),
+					atomic.LoadInt64(&actor.idle)).Seconds()),
 			)
 
-			act.timer.Reset(10 * time.Second)
+			actor.timer.Reset(10 * time.Second)
 		}
 	}
 }
 
-func (act *localActor) startStamp() {
-	act.startTime = time.Now()
+func (actor *localActor) startStamp() {
+	actor.startTime = time.Now()
 
 	logger.Info(
 		"actor start time",
 		zap.String("service", serviceName),
-		zap.String("actor", act.name),
-		zap.String("uuid", act.uuid),
-		zap.String("time", act.startTime.Format(time.UnixDate)),
+		zap.String("actor", actor.name),
+		zap.String("uuid", actor.uuid),
+		zap.String("time", actor.startTime.Format(time.UnixDate)),
 	)
 }
 
-func (act *localActor) endStamp() {
-	act.endTime = time.Now()
+func (actor *localActor) endStamp() {
+	actor.endTime = time.Now()
 
 	logger.Info(
 		"actor end time",
 		zap.String("service", serviceName),
-		zap.String("actor", act.name),
-		zap.String("uuid", act.uuid),
-		zap.String("time", act.endTime.Format(time.UnixDate)),
+		zap.String("actor", actor.name),
+		zap.String("uuid", actor.uuid),
+		zap.String("time", actor.endTime.Format(time.UnixDate)),
 	)
 
 }

@@ -23,7 +23,7 @@ func logActor(act actor.Actor) {
 	}
 }
 
-func Pipe1Actor(act actor.Actor) {
+func pipe1Actor(act actor.Actor) {
 	logActor, _ := actor.Get("logger")
 	pipe2Actor, _ := actor.Get("pipe2")
 
@@ -40,7 +40,7 @@ func Pipe1Actor(act actor.Actor) {
 	}
 }
 
-func Pipe2Actor(act actor.Actor) {
+func pipe2Actor(act actor.Actor) {
 	logActor, _ := actor.Get("logger")
 
 	for {
@@ -57,8 +57,8 @@ func Pipe2Actor(act actor.Actor) {
 
 func test(ctx context.Context) {
 
-	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, Pipe1Actor)
-	actor.NewActor(ctx, "pipe2", 3, Pipe2Actor)
+	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, pipe1Actor)
+	actor.NewActor(ctx, "pipe2", 3, pipe2Actor)
 
 	for {
 		select {

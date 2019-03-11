@@ -3,14 +3,14 @@ package actor
 import "errors"
 
 var (
-	// ChannelBufferError channel buffer setting error
-	ChannelBufferError = errors.New("channel buffer error")
-	// ChannelClosedError channel is in closed state
-	ChannelClosedError = errors.New("channel in closed state error")
-	// RegisterActorError register actor error
-	RegisterActorError = errors.New("register actor error")
-	// RetrieveActorError retrieve actor error
-	RetrieveActorError = errors.New("retrieve actor error")
-	// SendError actor send message error
-	SendError = errors.New("send message error")
+	// ErrChannelBuffer channel buffer setting error
+	ErrChannelBuffer = errors.New("channel buffer error")
+	// ErrChannelClosed channel is in closed state
+	ErrChannelClosed = errors.New("channel in closed state error")
+	// ErrRegisterActor register actor error
+	ErrRegisterActor = errors.New("register actor error")
+	// ErrRetrieveActor retrieve actor error
+	ErrRetrieveActor = errors.New("retrieve actor error")
+	// ErrSend actor send message error
+	ErrSend = errors.New("send message error")
 )

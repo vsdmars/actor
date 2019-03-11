@@ -53,6 +53,7 @@ type (
 )
 
 type (
+	// Actor is the actor interface for client to refer to
 	Actor interface {
 		Name() string
 		UUID() string
@@ -66,6 +67,6 @@ type (
 		startStamp()
 		endStamp()
 	}
-
+	// HandleType is the actor handle function signature
 	HandleType func(Actor)
 )
