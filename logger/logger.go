@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Logger is the zap logging service
 var Logger serviceLogger
 var origLogger serviceLogger
 

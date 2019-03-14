@@ -5,7 +5,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	l "github.com/vsdmars/actor/internal/logger"
+	db "github.com/vsdmars/actor/db"
+	l "github.com/vsdmars/actor/logger"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -25,10 +26,38 @@ func NewActor(
 	name string, // actor's name
 	buffer int, // actor's channel buffer
 	callbackFn HandleType, // actor's handler
+	b bool, // backup actor's receiving message
 ) (Actor, error) {
 
 	if buffer < 0 {
 		return nil, ErrChannelBuffer
+	}
+
+	var sqlite *db.Sqlite
+	uuidVal := uuid.New().String()
+
+	if b {
+		s, err := db.NewSqlite(
+			ctx,
+			name,
+			uuidVal,
+			db.DELETE, // sqlite journal mode
+			db.SHARED, // sqlite cache mode
+			10,        // rotate records
+			2,         // rotate period
+		)
+		if err != nil {
+			l.Logger.Error(
+				"backup db creation error",
+				zap.String("service", serviceName),
+				zap.String("actor", name),
+				zap.String("error", err.Error()),
+			)
+
+			return nil, err
+		}
+
+		sqlite = s
 	}
 
 	// create Actor's context
@@ -36,13 +65,14 @@ func NewActor(
 	// create Actor's message channel
 	pipe := make(chan interface{}, buffer)
 
-	// escape Actor object, store ptr to localActor instance into Actor interface
+	// escape localActor object store ptr to localActor instance into Actor interface
 	actor := Actor(
 		&localActor{
 			name:         name,
-			uuid:         uuid.New().String(),
+			uuid:         uuidVal,
 			actorContext: actorContext{ctx, cancel},
 			channels:     channels{pipe, pipe},
+			backup:       backup{sqlite},
 		},
 	)
 
@@ -81,19 +111,41 @@ func NewActor(
 
 // --- Actor interface functions ---
 
-// Name returns actor's name
-func (actor *localActor) Name() string {
-	return actor.name
+// Backup backups message into local sqlite db
+func (actor *localActor) Backup(msg string) {
+	if actor.sqlite != nil {
+		if err := actor.sqlite.Insert(msg); err != nil {
+			l.Logger.Error(
+				"backup actor message error",
+				zap.String("service", serviceName),
+				zap.String("actor", actor.name),
+				zap.String("uuid", actor.uuid),
+				zap.String("error", err.Error()),
+			)
+		}
+	}
 }
 
-// UUID returns actor's UUID
-func (actor *localActor) UUID() string {
-	return actor.uuid
+// Done Actor's context.done()
+//
+// context.done() is used for cleaning up Actor resource
+func (actor *localActor) Done() <-chan struct{} {
+	return actor.ctx.Done()
 }
 
 // Idle returns actor's idle time
 func (actor *localActor) Idle() time.Duration {
 	return time.Duration(atomic.LoadInt64(&actor.idle))
+}
+
+// Name returns actor's name
+func (actor *localActor) Name() string {
+	return actor.name
+}
+
+// Receive receives message from actor
+func (actor *localActor) Receive() <-chan interface{} {
+	return actor.receive
 }
 
 // Send sends message to actor
@@ -141,16 +193,9 @@ func (actor *localActor) Send(message interface{}) (err error) {
 	}
 }
 
-// Receive receives message from actor
-func (actor *localActor) Receive() <-chan interface{} {
-	return actor.receive
-}
-
-// Done Actor's context.done()
-//
-// context.done() is used for cleaning up Actor resource
-func (actor *localActor) Done() <-chan struct{} {
-	return actor.ctx.Done()
+// UUID returns actor's UUID
+func (actor *localActor) UUID() string {
+	return actor.uuid
 }
 
 func (actor *localActor) close() {
@@ -203,6 +248,10 @@ func (actor *localActor) increaseIdle() {
 func (actor *localActor) startStamp() {
 	actor.startTime = time.Now()
 
+	if actor.sqlite != nil {
+		actor.sqlite.Start(actor.startTime)
+	}
+
 	l.Logger.Info(
 		"actor start time",
 		zap.String("service", serviceName),
@@ -214,6 +263,10 @@ func (actor *localActor) startStamp() {
 
 func (actor *localActor) endStamp() {
 	actor.endTime = time.Now()
+
+	if actor.sqlite != nil {
+		actor.sqlite.Stop(actor.endTime)
+	}
 
 	l.Logger.Info(
 		"actor end time",

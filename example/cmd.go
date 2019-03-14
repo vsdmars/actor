@@ -19,11 +19,13 @@ func logActor(act actor.Actor) {
 			return
 		case v := <-act.Receive():
 			fmt.Printf("LOG MESSAGE: %v\n", v)
+			go act.Backup(string(v.(string)))
 		}
 	}
 }
 
 func pipe1Actor(act actor.Actor) {
+
 	logActor, _ := actor.Get("logger")
 	pipe2Actor, _ := actor.Get("pipe2")
 
@@ -41,6 +43,7 @@ func pipe1Actor(act actor.Actor) {
 }
 
 func pipe2Actor(act actor.Actor) {
+
 	logActor, _ := actor.Get("logger")
 
 	for {
@@ -57,8 +60,8 @@ func pipe2Actor(act actor.Actor) {
 
 func test(ctx context.Context) {
 
-	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, pipe1Actor)
-	actor.NewActor(ctx, "pipe2", 3, pipe2Actor)
+	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, pipe1Actor, false)
+	actor.NewActor(ctx, "pipe2", 3, pipe2Actor, false)
 
 	for {
 		select {
@@ -66,6 +69,7 @@ func test(ctx context.Context) {
 			return
 		default:
 			pipe1.Send(fmt.Sprintf("message %d", rand.Intn(100)))
+			// time.Sleep(2 * time.Second)
 		}
 	}
 
@@ -88,7 +92,7 @@ func main() {
 	RegisterHandler(syscall.SIGINT, quitSig)
 
 	// create logging actor 'logger' and standby
-	actor.NewActor(ctx, "logger", 3, logActor)
+	actor.NewActor(ctx, "logger", 3, logActor, true)
 
 	// starts test
 	go test(ctx)

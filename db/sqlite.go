@@ -11,9 +11,10 @@ import (
 	"strconv"
 	"time"
 
+	l "github.com/vsdmars/actor/logger"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	l "github.com/vsdmars/actor/internal/logger"
 	"go.uber.org/zap"
 )
 
@@ -68,9 +69,9 @@ var cacheMode = map[int]string{
 }
 
 var (
-	insertActorStart = `INSERT INTO actor(uuid, name, start_time) VALUES (:uuid, :name, :start_time)`
-	updateActorEnd   = `UPDATE actor SET end_time = :end_time WHERE uuid = :uuid`
-	insertLog        = `INSERT INTO log(time, message) VALUES (:time, :message)`
+	insertActorStart = `INSERT INTO actor(uuid, name, start_time) VALUES (:uuid, :name, :start_time) ;`
+	updateActorEnd   = `UPDATE actor SET end_time = :end_time WHERE uuid = :uuid ;`
+	insertLog        = `INSERT INTO log(time, message) VALUES (:time, :message) ;`
 )
 
 var (
@@ -143,23 +144,23 @@ func NewSqlite(
 	jmode int, // journal mode
 	cmode int, // cache mode
 	rcnt int, // rotate count
+	period int, // recycle period in seconds
 ) (*Sqlite, error) {
 
 	db, err := initDB(ctx, name, uuid, jmode, cmode, backupDB)
 	if err != nil {
-		// Log
 		l.Logger.Error(
-			"error logged",
+			"backup initDB error",
 			zap.String("service", serviceName),
-			zap.String("actor", actor.Name()),
-			zap.String("uuid", actor.UUID()),
-			zap.String("error", e.Error()),
+			zap.String("actor", name),
+			zap.String("uuid", uuid),
+			zap.String("error", err.Error()),
 		)
 		return nil, err
 	}
 
 	if rcnt > 0 {
-		go rotate(ctx, name, uuid, db, rcnt)
+		go rotate(ctx, name, uuid, db, rcnt, period)
 	}
 
 	return &Sqlite{
@@ -182,9 +183,6 @@ func initDB(
 	var dbPath string
 	currentDir, _ := os.Getwd()
 
-	// Log
-	fmt.Printf("CurrentDir: %s\n", currentDir)
-
 	switch dbType {
 	case backupDB:
 		dbPath = path.Join(currentDir, backupDir)
@@ -194,13 +192,8 @@ func initDB(
 		dbPath = path.Join(currentDir, backupDir)
 	}
 
-	// Log
-	fmt.Printf("dbPath: %s\n", dbPath)
-
 	if fi, err := os.Stat(dbPath); err != nil {
 		if err := os.Mkdir(dbPath, 0700); err != nil {
-			// Log
-			fmt.Printf("create directory error: %s\n", err.Error())
 			return nil, err
 		}
 	} else if !fi.IsDir() {
@@ -217,15 +210,13 @@ func initDB(
 		dbFile = path.Join(dbPath, fmt.Sprintf("%s_%s.db", name, uuid))
 	case rotateDB:
 		dbFiles := path.Join(dbPath, fmt.Sprintf(gpattern, name, uuid))
-		fmt.Printf("HERE-1 dbFiles: %s\n", dbFiles)
 
 		if m, err := filepath.Glob(dbFiles); err != nil {
 			dbFile = path.Join(dbPath, fmt.Sprintf("%s_%s_1.db", name, uuid))
 		} else {
 			re, err := regexp.Compile(fmt.Sprintf(rpattern, name, uuid))
 			if err != nil {
-				fmt.Printf("reg compile err: %s\n", err.Error())
-				return nil, nil
+				return nil, err
 			}
 
 			maxCnt := 0
@@ -248,13 +239,7 @@ func initDB(
 		dbFile = path.Join(dbPath, fmt.Sprintf("%s_%s.db", name, uuid))
 	}
 
-	// Log
-	fmt.Printf("HERE-2 dbFile: %s\n", dbFile)
-
 	dsn := fmt.Sprintf(dbDSN, dbFile, cacheMode[cmode], journalMode[jmode])
-
-	// Log
-	fmt.Printf("dsn: %s\n", dsn)
 
 	// Use open instead of MustOpen, which panics if can't open
 	// Use open instead of Connect since sqlite is local file
@@ -289,126 +274,189 @@ func rotate(
 	ctx context.Context,
 	name, uuid string,
 	db *sqlx.DB,
-	rcnt int) {
+	rcnt, period int) {
 
-	// c := time.Tick(5 * time.Second)
+	c := time.Tick(time.Duration(period) * time.Second)
+	if c == nil {
+		l.Logger.Error(
+			"rotate error",
+			zap.String("service", serviceName),
+			zap.String("actor", name),
+			zap.String("uuid", uuid),
+			zap.String("error", fmt.Sprintf(
+				"rotate period is invalid: %d", period)),
+		)
+
+		return
+	}
+
+	rating := make(chan struct{}, 1)
 
 	selectSql := `SELECT seq, time, message FROM log ORDER BY seq LIMIT ? ;`
 	deleteSql := `DELETE FROM log WHERE seq <= ? ;`
 	selectCnt := `SELECT COUNT(*) FROM log ;`
 
-	// var result []log
-
 	runner := func() {
+		defer func() {
+			<-rating
+		}()
+
 		var rowCnt int
 
 		tx, err := db.BeginTxx(ctx, nil)
 		if err != nil {
-			// Log
-			fmt.Printf("BeginTxx error: %s\n", err.Error())
+			l.Logger.Error(
+				"backup db transaction error",
+				zap.String("service", serviceName),
+				zap.String("actor", name),
+				zap.String("uuid", uuid),
+				zap.String("error", err.Error()),
+			)
+
 			return
 		}
 
 		cntRow := tx.QueryRowxContext(ctx, selectCnt)
 		cntRow.Scan(&rowCnt)
-		fmt.Printf("rowCnt: %v\n", rowCnt)
 
 		if rowCnt > rcnt {
-			fmt.Printf("rowCnt: %v, rcnt: %v \n", rowCnt, rcnt)
-
 			rdb, err := initDB(ctx, name, uuid, DELETE, PRIVATE, rotateDB)
 			if err != nil {
-				// Log
-				fmt.Println("rotate db create failure")
+				l.Logger.Error(
+					"rotate initDB error",
+					zap.String("service", serviceName),
+					zap.String("actor", name),
+					zap.String("uuid", uuid),
+					zap.String("error", err.Error()),
+				)
+
 				tx.Rollback()
 				return
 			}
 			defer rdb.Close()
 
-			fmt.Println("FU-1")
 			rows, err := tx.QueryxContext(ctx, selectSql, rcnt)
-			fmt.Println("FU-2")
 			if err != nil {
-				// Log
-				fmt.Printf("QueryxContext %s error: %s", selectSql, err.Error())
+				l.Logger.Error(
+					"backup db query error",
+					zap.String("service", serviceName),
+					zap.String("actor", name),
+					zap.String("uuid", uuid),
+					zap.Int("row count", rcnt),
+					zap.String("error", err.Error()),
+				)
+
 				tx.Rollback()
 				return
 			}
 			defer rows.Close()
-			fmt.Println("FU-3")
 
 			lastSeq := 0
 
 			for rows.Next() {
-				var l log
-				if err := rows.StructScan(&l); err != nil {
-					fmt.Printf("StructScan error: %s\n", err.Error())
+				var ll log
+				if err := rows.StructScan(&ll); err != nil {
+					l.Logger.Error(
+						"backup db StructScan error",
+						zap.String("service", serviceName),
+						zap.String("actor", name),
+						zap.String("uuid", uuid),
+						zap.String("error", err.Error()),
+					)
+
 					tx.Rollback()
 					return
 				}
-
-				fmt.Printf("seq: %v, time: %v msg: %v\n", l.Seq, l.Time, l.Msg)
 
 				_, err := rdb.NamedExecContext(
 					ctx,
 					insertLog,
-					l,
+					ll,
 				)
 				if err != nil {
-					// log
-					fmt.Printf("rotate insert err: %s\n", err.Error())
+					l.Logger.Error(
+						"rotate db insert error",
+						zap.String("service", serviceName),
+						zap.String("actor", name),
+						zap.String("uuid", uuid),
+						zap.String("error", err.Error()),
+					)
+
 					tx.Rollback()
 					return
 				}
-				lastSeq = l.Seq
+
+				lastSeq = ll.Seq
 			}
 
-			fmt.Printf("LastSeq: %d\n", lastSeq)
-
-			// delete
+			// Delete rotated data from backup DB
 			_, err = tx.ExecContext(
 				ctx,
 				deleteSql,
 				lastSeq,
 			)
 			if err != nil {
-				// log
-				fmt.Printf("rotate delete err: %s\n", err.Error())
+				l.Logger.Error(
+					"backup db delete error",
+					zap.String("service", serviceName),
+					zap.String("actor", name),
+					zap.String("uuid", uuid),
+					zap.String("error", err.Error()),
+				)
+
 				tx.Rollback()
 				return
 			}
-			fmt.Printf("ShitLastSeq: %d\n", lastSeq)
 		}
 
 		if err := tx.Commit(); err != nil {
-			// Log
-			fmt.Printf("Commit error: %s", err.Error())
+			l.Logger.Error(
+				"backup db commit error",
+				zap.String("service", serviceName),
+				zap.String("actor", name),
+				zap.String("uuid", uuid),
+				zap.String("error", err.Error()),
+			)
+
 			return
 		}
 	}
 
-	runner()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-c:
+			select {
+			case rating <- struct{}{}:
+				runner()
+			default:
+			}
+		}
+	}
+}
 
-	// for {
-	// select {
-	// case <-ctx.Done():
-	// return
-	// case <-c:
-	// runner()
-
-	// }
-	// }
+func (s *Sqlite) Close() {
+	if s.db != nil {
+		s.db.Close()
+	}
 }
 
 func (s *Sqlite) Insert(msg string) error {
 	b, err := json.Marshal(message{Msg: msg})
 	if err != nil {
-		// log
-		fmt.Printf("InsertLog marshal err: %s\n", err.Error())
+		l.Logger.Error(
+			"backup db insert error",
+			zap.String("service", serviceName),
+			zap.String("actor", s.name),
+			zap.String("uuid", s.uuid),
+			zap.String("error", err.Error()),
+		)
+
 		return err
 	}
 
-	r, err := s.db.NamedExecContext(
+	_, err = s.db.NamedExecContext(
 		s.ctx,
 		insertLog,
 		log{
@@ -417,18 +465,23 @@ func (s *Sqlite) Insert(msg string) error {
 		},
 	)
 	if err != nil {
-		// log
-		fmt.Printf("insert err: %s\n", err.Error())
-		return nil
+		l.Logger.Error(
+			"backup db insert error",
+			zap.String("service", serviceName),
+			zap.String("actor", s.name),
+			zap.String("uuid", s.uuid),
+			zap.String("error", err.Error()),
+		)
+
+		return err
 	}
 
-	_ = r
 	return nil
 }
 
 func (s *Sqlite) Start(startTime time.Time) error {
 	// use RFC3339 time format
-	r, err := s.db.NamedExecContext(
+	_, err := s.db.NamedExecContext(
 		s.ctx,
 		insertActorStart,
 		actor{
@@ -438,20 +491,23 @@ func (s *Sqlite) Start(startTime time.Time) error {
 		},
 	)
 	if err != nil {
-		// Log
-		fmt.Printf("insertActorStart err: %s\n", err.Error())
+		l.Logger.Error(
+			"backup db insert start time error",
+			zap.String("service", serviceName),
+			zap.String("actor", s.name),
+			zap.String("uuid", s.uuid),
+			zap.String("error", err.Error()),
+		)
+
 		return err
 	}
 
-	// Log result
-	_ = r
 	return nil
 }
 
 func (s *Sqlite) Stop(endTime time.Time) error {
-	// updateActorEnd   = `UPDATE actor SET end_time = :end_time WHERE uuid = :uuid`
 	// use RFC3339 time format
-	r, err := s.db.NamedExecContext(
+	_, err := s.db.NamedExecContext(
 		s.ctx,
 		updateActorEnd,
 		actor{
@@ -460,45 +516,70 @@ func (s *Sqlite) Stop(endTime time.Time) error {
 		},
 	)
 	if err != nil {
-		// log
-		fmt.Printf("updateActorEnd err: %s\n", err.Error())
-		return nil
+		l.Logger.Error(
+			"backup db insert stop time error",
+			zap.String("service", serviceName),
+			zap.String("actor", s.name),
+			zap.String("uuid", s.uuid),
+			zap.String("error", err.Error()),
+		)
+		return err
 	}
 
-	// log
-	_ = r
 	return nil
 }
 
-func main_old() {
-	fmt.Println("starts")
-	ctx, cancel := context.WithCancel(context.Background())
+// func main_test() {
+// fmt.Println("starts")
+// ctx, cancel := context.WithCancel(context.Background())
 
-	db, _ := initDB(ctx, "actorX", "123456", DELETE, SHARED, backupDB)
-	rotate(ctx, "actorX", "123456", db, 30)
+// quitSig := func() {
+// cancel()
+// }
 
-	_ = cancel
-	s, err := NewSqlite(
-		ctx,
-		"actorX",
-		"123456",
-		DELETE,
-		SHARED,
-		100,
-	)
-	if err != nil {
-		fmt.Printf("error: %s\n", err.Error())
-	}
+// // register signal dispositions
+// RegisterHandler(syscall.SIGQUIT, quitSig)
+// RegisterHandler(syscall.SIGTERM, quitSig)
+// RegisterHandler(syscall.SIGINT, quitSig)
 
-	s.Start(time.Now())
+// // db, _ := initDB(ctx, "actorX", "123456", DELETE, SHARED, backupDB)
+// // rotate(ctx, "actorX", "123456", db, 30)
 
-	for {
-		s.Insert("hi there~")
-		time.Sleep(2 * time.Second)
-	}
+// s, err := NewSqlite(
+// ctx,
+// "actorX",
+// "123456",
+// DELETE,
+// SHARED,
+// 1000,
+// 1,
+// )
+// if err != nil {
+// fmt.Printf("error: %s\n", err.Error())
+// }
 
-	s.Stop(time.Now())
-	_ = cancel
-	<-ctx.Done()
-	fmt.Println("ends")
-}
+// s.Start(time.Now())
+
+// fmt.Println("HERE-1")
+
+// func() {
+// for {
+// select {
+// case <-ctx.Done():
+// return
+// default:
+// s.Insert("hi there~")
+// fmt.Println("HERE-2")
+// // time.Sleep(12 * time.Second)
+// }
+// }
+// }()
+
+// fmt.Println("HERE-3")
+
+// s.Stop(time.Now())
+// fmt.Println("HERE-4")
+
+// <-ctx.Done()
+// fmt.Println("ends")
+// }

@@ -1,7 +1,7 @@
 package actor
 
 import (
-	l "github.com/vsdmars/actor/internal/logger"
+	l "github.com/vsdmars/actor/logger"
 
 	"go.uber.org/zap"
 )

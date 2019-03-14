@@ -4,12 +4,18 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	db "github.com/vsdmars/actor/db"
 )
 
 type (
 	actorContext struct {
 		ctx    context.Context // clean up by .cancel it
 		cancel context.CancelFunc
+	}
+
+	backup struct {
+		sqlite *db.Sqlite
 	}
 
 	channels struct {
@@ -34,6 +40,7 @@ type (
 		actorContext
 		timing
 		channels
+		backup
 	}
 
 	remoteActor struct {
@@ -61,6 +68,7 @@ type (
 		Send(message interface{}) error
 		Receive() <-chan interface{}
 		Done() <-chan struct{}
+		Backup(string)
 		close()        // close actor channel
 		resetIdle()    // reset actor idle duration
 		increaseIdle() // increase actor idle duration
