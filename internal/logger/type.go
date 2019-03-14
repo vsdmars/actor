@@ -1,4 +1,4 @@
-package actor
+package logger
 
 import (
 	"go.uber.org/zap"

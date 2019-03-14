@@ -1,6 +1,8 @@
 package actor
 
 import (
+	l "github.com/vsdmars/actor/internal/logger"
+
 	"go.uber.org/zap"
 )
 
@@ -16,7 +18,7 @@ func Cleanup() {
 	defer regActor.rwLock.RUnlock()
 	regActor.rwLock.RLock()
 
-	logger.Info(
+	l.Logger.Info(
 		"Actor Service Cleanup",
 		zap.String("service", serviceName),
 	)
@@ -24,7 +26,7 @@ func Cleanup() {
 	for _, actor := range regActor.uuidActor {
 		actor.close()
 
-		logger.Info(
+		l.Logger.Info(
 			"Actor closed due to Cleanup",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -32,7 +34,7 @@ func Cleanup() {
 		)
 	}
 
-	logSync()
+	l.LogSync()
 }
 
 // Get return registered Actor by name
@@ -55,7 +57,7 @@ func (r *registeredActor) register(actor Actor) error {
 	r.rwLock.Lock()
 
 	if _, ok := r.nameUUID[actor.Name()]; ok {
-		logger.Error(
+		l.Logger.Error(
 			"register Actor failed",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -69,7 +71,7 @@ func (r *registeredActor) register(actor Actor) error {
 	r.nameUUID[actor.Name()] = actor.UUID()
 	r.uuidActor[actor.UUID()] = actor
 
-	logger.Info(
+	l.Logger.Info(
 		"actor registered",
 		zap.String("service", serviceName),
 		zap.String("actor", actor.Name()),
@@ -84,7 +86,7 @@ func (r *registeredActor) deregister(actor Actor) error {
 	r.rwLock.Lock()
 
 	if _, ok := r.nameUUID[actor.Name()]; !ok {
-		logger.Error(
+		l.Logger.Error(
 			"deregister Actor failed",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -98,7 +100,7 @@ func (r *registeredActor) deregister(actor Actor) error {
 	delete(r.uuidActor, actor.UUID())
 	delete(r.nameUUID, actor.Name())
 
-	logger.Info(
+	l.Logger.Info(
 		"actor deregistered",
 		zap.String("service", serviceName),
 		zap.String("actor", actor.Name()),
@@ -114,7 +116,7 @@ func (r *registeredActor) getByName(name string) (Actor, error) {
 
 	if uuid, ok := r.nameUUID[name]; ok {
 		if actor, ok := r.uuidActor[uuid]; ok {
-			logger.Info(
+			l.Logger.Info(
 				"get actor by name",
 				zap.String("service", serviceName),
 				zap.String("actor", name),
@@ -126,7 +128,7 @@ func (r *registeredActor) getByName(name string) (Actor, error) {
 		}
 	}
 
-	logger.Error(
+	l.Logger.Error(
 		"get actor by name failed",
 		zap.String("service", serviceName),
 		zap.String("actor", name),
@@ -141,7 +143,7 @@ func (r *registeredActor) getByUUID(uuid string) (Actor, error) {
 	r.rwLock.RLock()
 
 	if actor, ok := r.uuidActor[uuid]; ok {
-		logger.Info(
+		l.Logger.Info(
 			"get actor by uuid",
 			zap.String("service", serviceName),
 			zap.String("uuid", uuid),
@@ -151,7 +153,7 @@ func (r *registeredActor) getByUUID(uuid string) (Actor, error) {
 		return actor, nil
 	}
 
-	logger.Error(
+	l.Logger.Error(
 		"get actor by uuid failed",
 		zap.String("service", serviceName),
 		zap.String("uuid", uuid),

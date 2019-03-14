@@ -5,6 +5,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	l "github.com/vsdmars/actor/internal/logger"
+
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
@@ -47,7 +49,7 @@ func NewActor(
 	if err := regActor.register(actor); err != nil {
 		actor.close() // clean up actor
 
-		logger.Debug(
+		l.Logger.Debug(
 			"clean up tmp actor",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -98,7 +100,7 @@ func (actor *localActor) Idle() time.Duration {
 func (actor *localActor) Send(message interface{}) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			logger.Error(
+			l.Logger.Error(
 				"actor in closed state",
 				zap.String("service", serviceName),
 				zap.String("actor", actor.name),
@@ -112,7 +114,7 @@ func (actor *localActor) Send(message interface{}) (err error) {
 
 	select {
 	case <-actor.Done():
-		logger.Error(
+		l.Logger.Error(
 			"actor is cancelled",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.name),
@@ -127,7 +129,7 @@ func (actor *localActor) Send(message interface{}) (err error) {
 		actor.send <- message
 		actor.resetIdle()
 
-		logger.Debug(
+		l.Logger.Debug(
 			"send",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -184,7 +186,7 @@ func (actor *localActor) increaseIdle() {
 				int64(time.Duration(passed.Second())*time.Second),
 			)
 
-			logger.Debug(
+			l.Logger.Debug(
 				"actor idle seconds",
 				zap.String("service", serviceName),
 				zap.String("actor", actor.name),
@@ -201,7 +203,7 @@ func (actor *localActor) increaseIdle() {
 func (actor *localActor) startStamp() {
 	actor.startTime = time.Now()
 
-	logger.Info(
+	l.Logger.Info(
 		"actor start time",
 		zap.String("service", serviceName),
 		zap.String("actor", actor.name),
@@ -213,7 +215,7 @@ func (actor *localActor) startStamp() {
 func (actor *localActor) endStamp() {
 	actor.endTime = time.Now()
 
-	logger.Info(
+	l.Logger.Info(
 		"actor end time",
 		zap.String("service", serviceName),
 		zap.String("actor", actor.name),
