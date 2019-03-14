@@ -69,7 +69,7 @@ func test(ctx context.Context) {
 			return
 		default:
 			pipe1.Send(fmt.Sprintf("message %d", rand.Intn(100)))
-			// time.Sleep(2 * time.Second)
+			time.Sleep(1 * time.Second)
 		}
 	}
 
