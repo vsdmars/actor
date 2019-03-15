@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -76,6 +77,7 @@ var (
 
 var (
 	ErrDbPathIsAFile = "%s is an existing file"
+	ErrDbClosed      = errors.New("DB is closed")
 )
 
 var actor_schema = `
@@ -437,6 +439,7 @@ func rotate(
 }
 
 func (s *Sqlite) Close() {
+	fmt.Println("WTF is calling!")
 	if s.db != nil {
 		s.db.Close()
 	}
@@ -506,9 +509,13 @@ func (s *Sqlite) Start(startTime time.Time) error {
 }
 
 func (s *Sqlite) Stop(endTime time.Time) error {
+	if s.db == nil {
+		return ErrDbClosed
+	}
+
 	// use RFC3339 time format
-	_, err := s.db.NamedExecContext(
-		s.ctx,
+	// Do not use context call due to actor is in cancel state
+	_, err := s.db.NamedExec(
 		updateActorEnd,
 		actor{
 			Uuid:  s.uuid,
@@ -516,6 +523,7 @@ func (s *Sqlite) Stop(endTime time.Time) error {
 		},
 	)
 	if err != nil {
+		fmt.Println("HAHA-1")
 		l.Logger.Error(
 			"backup db insert stop time error",
 			zap.String("service", serviceName),
@@ -525,6 +533,7 @@ func (s *Sqlite) Stop(endTime time.Time) error {
 		)
 		return err
 	}
+	fmt.Println("HAHA-2")
 
 	return nil
 }

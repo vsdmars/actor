@@ -98,6 +98,8 @@ func main() {
 	go test(ctx)
 
 	<-ctx.Done()
+
+	// Cleanup will call actor's close
 	actor.Cleanup()
 
 	// waits seconds for actors to safely clean up (graceful shutdown)

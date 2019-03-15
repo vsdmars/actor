@@ -93,8 +93,8 @@ func NewActor(
 	go func() {
 		defer func() {
 			regActor.deregister(actor)
-			actor.close()
 			actor.endStamp()
+			actor.close()
 		}()
 
 		actor.startStamp()
@@ -200,6 +200,7 @@ func (actor *localActor) UUID() string {
 
 func (actor *localActor) close() {
 	actor.cancel()
+
 	// https://stackoverflow.com/a/8593986 Not a precise answer but ok.
 	// do not close actor's channel avoid race condition
 	// it's not a resource leak if channel remains open
@@ -266,6 +267,7 @@ func (actor *localActor) endStamp() {
 
 	if actor.sqlite != nil {
 		actor.sqlite.Stop(actor.endTime)
+		actor.sqlite.Close()
 	}
 
 	l.Logger.Info(
