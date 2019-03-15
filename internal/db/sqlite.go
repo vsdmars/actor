@@ -439,7 +439,6 @@ func rotate(
 }
 
 func (s *Sqlite) Close() {
-	fmt.Println("WTF is calling!")
 	if s.db != nil {
 		s.db.Close()
 	}
@@ -523,7 +522,6 @@ func (s *Sqlite) Stop(endTime time.Time) error {
 		},
 	)
 	if err != nil {
-		fmt.Println("HAHA-1")
 		l.Logger.Error(
 			"backup db insert stop time error",
 			zap.String("service", serviceName),
@@ -533,7 +531,6 @@ func (s *Sqlite) Stop(endTime time.Time) error {
 		)
 		return err
 	}
-	fmt.Println("HAHA-2")
 
 	return nil
 }
