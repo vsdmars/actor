@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	l "github.com/vsdmars/actor/logger"
+	l "github.com/vsdmars/actor/internal/logger"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"

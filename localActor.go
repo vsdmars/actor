@@ -5,8 +5,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	db "github.com/vsdmars/actor/db"
-	l "github.com/vsdmars/actor/logger"
+	db "github.com/vsdmars/actor/internal/db"
+	l "github.com/vsdmars/actor/internal/logger"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

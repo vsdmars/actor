@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	db "github.com/vsdmars/actor/db"
+	db "github.com/vsdmars/actor/internal/db"
 )
 
 type (
