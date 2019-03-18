@@ -1,3 +1,5 @@
+// +build database
+
 package db
 
 import (
@@ -26,22 +28,6 @@ import (
 // Ensure every transaction returns its connection via Commit() or Rollback()
 // Note that Rows.Close() can be called multiple times safely,
 // so do not fear calling it where it might not be necessary.
-
-// https://www.sqlite.org/pragma.html#pragma_journal_mode
-const (
-	DELETE = iota
-	TRUNCATE
-	PERSIST
-	MEMORY
-	WAL
-	OFF
-)
-
-// https://www.sqlite.org/sharedcache.html
-const (
-	SHARED = iota
-	PRIVATE
-)
 
 const (
 	backupDB = iota
@@ -96,17 +82,7 @@ CREATE TABLE if not exists log(
 );
 `
 
-// Sqlite is the externed sqlite type
-type Sqlite struct {
-	ctx     context.Context
-	name    string
-	uuid    string
-	journal int
-	cache   int
-	rotate  int
-	db      *sqlx.DB
-}
-
+// database ORM types
 type (
 	message struct {
 		Msg string `json:"message"`

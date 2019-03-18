@@ -60,8 +60,8 @@ func pipe2Actor(act actor.Actor) {
 
 func test(ctx context.Context) {
 
-	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, pipe1Actor, false)
-	actor.NewActor(ctx, "pipe2", 3, pipe2Actor, false)
+	pipe1, _ := actor.NewActor(ctx, "pipe1", 3, pipe1Actor, -1)
+	actor.NewActor(ctx, "pipe2", 3, pipe2Actor, -1)
 
 	for {
 		select {
@@ -92,7 +92,7 @@ func main() {
 	RegisterHandler(syscall.SIGINT, quitSig)
 
 	// create logging actor 'logger' and standby
-	actor.NewActor(ctx, "logger", 3, logActor, true)
+	actor.NewActor(ctx, "logger", 3, logActor, 3)
 
 	// starts test
 	go test(ctx)

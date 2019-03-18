@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	db "github.com/vsdmars/actor/internal/db"
+	idb "github.com/vsdmars/actor/internal/db"
 )
 
 type (
@@ -15,7 +15,7 @@ type (
 	}
 
 	backup struct {
-		sqlite *db.Sqlite
+		db idb.DB
 	}
 
 	channels struct {

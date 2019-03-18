@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	db "github.com/vsdmars/actor/internal/db"
+	idb "github.com/vsdmars/actor/internal/db"
 	l "github.com/vsdmars/actor/internal/logger"
 
 	"github.com/google/uuid"
@@ -21,30 +21,33 @@ import (
 // buffer: actor's channel buffer
 //
 // callbackFn: actor handler
+//
+// b: <0: disable backup, ==0: backup without rotation, >0: backup with rotation rows
 func NewActor(
 	ctx context.Context, // caller's context, able to cancel created actor.
 	name string, // actor's name
 	buffer int, // actor's channel buffer
 	callbackFn HandleType, // actor's handler
-	b bool, // backup actor's receiving message
+	b int, // backup actor's receiving message
 ) (Actor, error) {
 
 	if buffer < 0 {
 		return nil, ErrChannelBuffer
 	}
 
-	var sqlite *db.Sqlite
+	var db idb.DB
 	uuidVal := uuid.New().String()
 
-	if b {
-		s, err := db.NewSqlite(
+	if b >= 0 {
+		// using sqlite for local backup
+		s, err := idb.NewSqlite(
 			ctx,
 			name,
 			uuidVal,
-			db.DELETE, // sqlite journal mode
-			db.SHARED, // sqlite cache mode
-			10,        // rotate records
-			2,         // rotate period
+			idb.DELETE, // sqlite journal mode
+			idb.SHARED, // sqlite cache mode
+			b,          // rotate records
+			30,         // rotate period/seconds
 		)
 		if err != nil {
 			l.Logger.Error(
@@ -57,7 +60,7 @@ func NewActor(
 			return nil, err
 		}
 
-		sqlite = s
+		db = s
 	}
 
 	// create Actor's context
@@ -72,7 +75,7 @@ func NewActor(
 			uuid:         uuidVal,
 			actorContext: actorContext{ctx, cancel},
 			channels:     channels{pipe, pipe},
-			backup:       backup{sqlite},
+			backup:       backup{db},
 		},
 	)
 
@@ -113,8 +116,8 @@ func NewActor(
 
 // Backup backups message into local sqlite db
 func (actor *localActor) Backup(msg string) {
-	if actor.sqlite != nil {
-		if err := actor.sqlite.Insert(msg); err != nil {
+	if actor.db != nil {
+		if err := actor.db.Insert(msg); err != nil {
 			l.Logger.Error(
 				"backup actor message error",
 				zap.String("service", serviceName),
@@ -249,8 +252,8 @@ func (actor *localActor) increaseIdle() {
 func (actor *localActor) startStamp() {
 	actor.startTime = time.Now()
 
-	if actor.sqlite != nil {
-		actor.sqlite.Start(actor.startTime)
+	if actor.db != nil {
+		actor.db.Start(actor.startTime)
 	}
 
 	l.Logger.Info(
@@ -265,9 +268,9 @@ func (actor *localActor) startStamp() {
 func (actor *localActor) endStamp() {
 	actor.endTime = time.Now()
 
-	if actor.sqlite != nil {
-		actor.sqlite.Stop(actor.endTime)
-		actor.sqlite.Close()
+	if actor.db != nil {
+		actor.db.Stop(actor.endTime)
+		actor.db.Close()
 	}
 
 	l.Logger.Info(
