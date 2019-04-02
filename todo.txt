@@ -50,3 +50,7 @@ Message / payload can have a actor path field which records the
 
 Payload version:
 config versioning https://github.com/hashicorp/go-version
+
+---------------------------------
+Unit test cmd:
+$ go test -cover -race -covermode=atomic -coverprofile=test_result.out -v -actor 1000 -msg 1000

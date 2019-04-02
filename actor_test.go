@@ -3,6 +3,7 @@ package actor_test
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -21,15 +22,16 @@ type testCase struct {
 }
 
 const (
-	actorBufferErr   = "actor buffer error"
-	actorIdleErr     = "actor has incorrect idle time: %v seconds, expecting: %s"
-	actorNotClosed   = "actor not closed while cancelled"
-	actorNotCleanup  = "actor not cleanup while panic"
-	actorPanicErr    = "actor panic error"
-	actorTimeoutErr  = "actor timeout error"
-	createActorErr   = "create actor error"
-	getActorErr      = "get actor error"
-	retrieveActorErr = "retrieve actor error: %s"
+	actorBufferErr    = "actor buffer error"
+	actorIdleErr      = "actor has incorrect idle time: %v seconds, expecting: %s"
+	actorNotClosed    = "actor not closed while cancelled"
+	actorNotCleanup   = "actor not cleanup while panic"
+	actorPanicErr     = "actor panic error"
+	actorTimeoutErr   = "actor timeout error"
+	createActorErr    = "create actor error"
+	duplicateActorErr = "duplicate actor error"
+	getActorErr       = "get actor error"
+	retrieveActorErr  = "retrieve actor error: %s"
 )
 
 var (
@@ -37,6 +39,14 @@ var (
 	errActorNotCleanup = errors.New("actor not cleanup yet")
 	errActorTimeout    = errors.New("actor timeout")
 )
+
+var actorCnt uint64
+var msgCnt uint64
+
+func init() {
+	flag.Uint64Var(&actorCnt, "actor", 100, "number of actors")
+	flag.Uint64Var(&msgCnt, "msg", 42000, "number of messages")
+}
 
 func createHandle(
 	t *testing.T,
@@ -81,7 +91,7 @@ func createHandle(
 			}
 		}
 
-		dl := deadline.New(1 * time.Minute)
+		dl := deadline.New(2 * time.Minute)
 		err := dl.Run(checker)
 		switch err {
 		case deadline.ErrTimedOut:
@@ -142,7 +152,7 @@ func TestSingleActorBurst(t *testing.T) {
 	defer cancel()
 
 	msg := "i am the lead role!"
-	burst := 42000
+	burst := int(msgCnt)
 
 	for _, tc := range createTestCase(1, 3, -1) {
 		handle, done := createHandle(t, msg, burst, false)
@@ -175,7 +185,7 @@ func TestSingleActorMultiSend(t *testing.T) {
 	defer cancel()
 
 	msg := "i am the lead role!"
-	burst := 42000
+	burst := int(msgCnt)
 
 	sender := func(name string, number int) {
 		act, err := actor.Get(name)
@@ -228,7 +238,8 @@ func TestMultiActorMultiSend(t *testing.T) {
 	defer cancel()
 
 	msg := "i am the lead role!"
-	burst := 42000
+	burst := int(msgCnt)
+	actors := int(actorCnt)
 
 	sender := func(name string, number int) {
 		act, err := actor.Get(name)
@@ -244,7 +255,7 @@ func TestMultiActorMultiSend(t *testing.T) {
 
 	t.Run("MultiActorMultiSend",
 		func(t *testing.T) {
-			for idx, tc := range createTestCase(100, 3, -1) {
+			for idx, tc := range createTestCase(actors, 3, -1) {
 				tc := tc
 
 				h := func(t *testing.T) {
@@ -371,16 +382,17 @@ func TestActorIdle(t *testing.T) {
 			t.Fatal(createActorErr)
 		}
 
-		time.Sleep(12 * time.Second)
+		// actor runtime updates idle timer every 10 seconds
+		time.Sleep(30 * time.Second)
 		ret := act.Idle().Seconds()
 		if ret <= 9 {
-			t.Errorf(actorIdleErr, ret, "<= 9 seconds")
+			t.Errorf(actorIdleErr, ret, ">= 9 seconds")
 		}
 
 		act.Send(msg)
 		ret = act.Idle().Seconds()
 		if ret > 9 {
-			t.Errorf(actorIdleErr, ret, "> 9 seconds")
+			t.Errorf(actorIdleErr, ret, "< 9 seconds")
 		}
 
 		<-done
@@ -486,5 +498,37 @@ func TestGetByNameAndUUID(t *testing.T) {
 	_, err = actor.Get("GARBAGE")
 	if err != actor.ErrRetrieveActor {
 		t.Errorf(retrieveActorErr, "By Name")
+	}
+}
+
+func TestDuplicateActor(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	msg := "i am the lead role!"
+	sameActorName := "vsdmars"
+
+	handle, _ := createHandle(t, msg, 3, false)
+
+	_, err := actor.NewActor(
+		ctx,
+		sameActorName,
+		0,
+		handle,
+		-1,
+	)
+	if err != nil {
+		t.Fatal(createActorErr)
+	}
+
+	_, err = actor.NewActor(
+		ctx,
+		sameActorName,
+		0,
+		handle,
+		-1,
+	)
+	if err != actor.ErrRegisterActor {
+		t.Error(duplicateActorErr)
 	}
 }
