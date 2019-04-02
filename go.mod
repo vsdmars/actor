@@ -1,6 +1,7 @@
 module github.com/vsdmars/actor
 
 require (
+	github.com/eapache/go-resiliency v1.1.0
 	github.com/google/uuid v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/mattn/go-sqlite3 v1.10.0

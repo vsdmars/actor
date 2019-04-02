@@ -22,7 +22,7 @@ import (
 //
 // callbackFn: actor handler
 //
-// b: <0: disable backup, ==0: backup without rotation, >0: backup with rotation rows
+// b: < 0: disable backup, == 0: backup without rotation, > 0: backup with rotation rows
 func NewActor(
 	ctx context.Context, // caller's context, able to cancel created actor.
 	name string, // actor's name
@@ -83,7 +83,7 @@ func NewActor(
 		actor.close() // clean up actor
 
 		l.Logger.Debug(
-			"clean up tmp actor",
+			"clean up duplicated actor",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
 			zap.String("uuid", actor.UUID()),
@@ -95,6 +95,10 @@ func NewActor(
 
 	go func() {
 		defer func() {
+			regActor.deregister(actor)
+			actor.endStamp()
+			actor.close()
+
 			if r := recover(); r != nil {
 				l.Logger.Error(
 					"actor handler panic",
@@ -104,10 +108,6 @@ func NewActor(
 					zap.Any("panic", r),
 				)
 			}
-
-			regActor.deregister(actor)
-			actor.endStamp()
-			actor.close()
 		}()
 
 		actor.startStamp()
@@ -187,6 +187,7 @@ func (actor *localActor) Send(message interface{}) (err error) {
 			zap.String("error", "actor is cancelled"),
 		)
 
+		err = ErrChannelClosed
 		return
 	default:
 		// block, force golang scheduler to process message.
