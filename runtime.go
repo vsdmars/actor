@@ -1,9 +1,15 @@
 package actor
 
 import (
+	"fmt"
+
 	l "github.com/vsdmars/actor/internal/logger"
 
 	"go.uber.org/zap"
+)
+
+const (
+	errDupRegister = "actor already registered by name: %s"
 )
 
 var (
@@ -62,7 +68,7 @@ func (r *registeredActor) register(actor Actor) error {
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
 			zap.String("uuid", actor.UUID()),
-			zap.String("message", "actor already registered by name"),
+			zap.String("error", fmt.Sprintf(errDupRegister, actor.Name())),
 		)
 
 		return ErrRegisterActor

@@ -95,6 +95,16 @@ func NewActor(
 
 	go func() {
 		defer func() {
+			if r := recover(); r != nil {
+				l.Logger.Error(
+					"actor handler panic",
+					zap.String("service", serviceName),
+					zap.String("actor", actor.Name()),
+					zap.String("uuid", actor.UUID()),
+					zap.Any("panic", r),
+				)
+			}
+
 			regActor.deregister(actor)
 			actor.endStamp()
 			actor.close()
