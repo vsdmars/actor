@@ -13,6 +13,7 @@ import (
 	"github.com/eapache/go-resiliency/deadline"
 	"github.com/google/uuid"
 	"github.com/vsdmars/actor"
+	"go.uber.org/zap"
 )
 
 type testCase struct {
@@ -46,6 +47,9 @@ var msgCnt uint64
 func init() {
 	flag.Uint64Var(&actorCnt, "actor", 100, "number of actors")
 	flag.Uint64Var(&msgCnt, "msg", 42000, "number of messages")
+
+	// setup log level
+	actor.SetLogLevel(zap.FatalLevel)
 }
 
 func createHandle(

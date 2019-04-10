@@ -77,7 +77,7 @@ func test(ctx context.Context) {
 
 func main() {
 	// setup log level
-	actor.SetLogLevel(zap.DebugLevel)
+	actor.SetLogLevel(zap.FatalLevel)
 
 	// create root context
 	ctx, cancel := context.WithCancel(context.Background())
