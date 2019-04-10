@@ -28,7 +28,6 @@ func LogSync() {
 func SetLogger(l *zap.Logger) {
 	if l != nil {
 		Logger.Logger = l
-		Logger.atom = nil
 		Logger.provided = true
 		return
 	}
@@ -44,7 +43,7 @@ func SetLogLevel(level zapcore.Level) {
 		return
 	}
 
-	Logger.atom.SetLevel(level)
+	Logger.config.Level.SetLevel(level)
 }
 
 func initLogger() {
@@ -70,6 +69,6 @@ func initLogger() {
 		os.Exit(1)
 	}
 
-	Logger = serviceLogger{mylogger, &atom, false}
+	Logger = serviceLogger{mylogger, &config, false}
 	origLogger = Logger
 }

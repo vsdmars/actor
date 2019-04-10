@@ -6,6 +6,6 @@ import (
 
 type serviceLogger struct {
 	*zap.Logger
-	atom     *zap.AtomicLevel
+	config   *zap.Config
 	provided bool
 }
