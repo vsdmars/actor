@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	l "github.com/vsdmars/actor/internal/logger"
+	. "github.com/vsdmars/actor/internal/logger"
 	"go.uber.org/zap"
 )
 
@@ -44,7 +44,7 @@ func NewSqlite(
 }
 
 func (s *Sqlite) Close() {
-	l.Logger.Debug(
+	GetLog().Debug(
 		"Close noop",
 		zap.String("service", serviceName),
 		zap.String("actor", s.name),
@@ -53,7 +53,7 @@ func (s *Sqlite) Close() {
 }
 
 func (s *Sqlite) Insert(msg string) error {
-	l.Logger.Debug(
+	GetLog().Debug(
 		"Insert noop",
 		zap.String("service", serviceName),
 		zap.String("actor", s.name),
@@ -65,7 +65,7 @@ func (s *Sqlite) Insert(msg string) error {
 }
 
 func (s *Sqlite) Start(startTime time.Time) error {
-	l.Logger.Debug(
+	GetLog().Debug(
 		"Start noop",
 		zap.String("service", serviceName),
 		zap.String("actor", s.name),
@@ -77,7 +77,7 @@ func (s *Sqlite) Start(startTime time.Time) error {
 }
 
 func (s *Sqlite) Stop(endTime time.Time) error {
-	l.Logger.Debug(
+	GetLog().Debug(
 		"Stop noop",
 		zap.String("service", serviceName),
 		zap.String("actor", s.name),

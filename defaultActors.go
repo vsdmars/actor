@@ -1,7 +1,7 @@
 package actor
 
 import (
-	l "github.com/vsdmars/actor/internal/logger"
+	. "github.com/vsdmars/actor/internal/logger"
 
 	"go.uber.org/zap"
 )
@@ -14,7 +14,7 @@ func LogErrorActor(actor Actor) {
 			return
 		case err := <-actor.Receive():
 			e := err.(error)
-			l.Logger.Error(
+			GetLog().Error(
 				"error logged",
 				zap.String("service", serviceName),
 				zap.String("actor", actor.Name()),

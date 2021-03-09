@@ -6,7 +6,7 @@ import (
 	"time"
 
 	idb "github.com/vsdmars/actor/internal/db"
-	l "github.com/vsdmars/actor/internal/logger"
+	. "github.com/vsdmars/actor/internal/logger"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -50,7 +50,7 @@ func NewActor(
 			30,         // rotate period/seconds
 		)
 		if err != nil {
-			l.Logger.Error(
+			GetLog().Error(
 				"backup db creation error",
 				zap.String("service", serviceName),
 				zap.String("actor", name),
@@ -82,7 +82,7 @@ func NewActor(
 	if err := regActor.register(actor); err != nil {
 		actor.close() // clean up actor
 
-		l.Logger.Debug(
+		GetLog().Debug(
 			"clean up duplicated actor",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -100,7 +100,7 @@ func NewActor(
 			actor.close()
 
 			if r := recover(); r != nil {
-				l.Logger.Error(
+				GetLog().Error(
 					"actor handler panic",
 					zap.String("service", serviceName),
 					zap.String("actor", actor.Name()),
@@ -128,7 +128,7 @@ func NewActor(
 func (actor *localActor) Backup(msg string) {
 	if actor.db != nil {
 		if err := actor.db.Insert(msg); err != nil {
-			l.Logger.Error(
+			GetLog().Error(
 				"backup actor message error",
 				zap.String("service", serviceName),
 				zap.String("actor", actor.name),
@@ -163,23 +163,23 @@ func (actor *localActor) Receive() <-chan interface{} {
 
 // Send sends message to actor
 func (actor *localActor) Send(message interface{}) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			l.Logger.Error(
-				"actor in closed state",
-				zap.String("service", serviceName),
-				zap.String("actor", actor.name),
-				zap.String("uuid", actor.uuid),
-				zap.Any("recover", r),
-			)
+	// defer func() {
+	// if r := recover(); r != nil {
+	// GetLog().Error(
+	// "actor in closed state",
+	// zap.String("service", serviceName),
+	// zap.String("actor", actor.name),
+	// zap.String("uuid", actor.uuid),
+	// zap.Any("recover", r),
+	// )
 
-			err = ErrChannelClosed
-		}
-	}()
+	// err = ErrChannelClosed
+	// }
+	// }()
 
 	select {
 	case <-actor.Done():
-		l.Logger.Error(
+		GetLog().Error(
 			"actor is cancelled",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.name),
@@ -195,7 +195,7 @@ func (actor *localActor) Send(message interface{}) (err error) {
 		actor.send <- message
 		actor.resetIdle()
 
-		l.Logger.Debug(
+		GetLog().Debug(
 			"send",
 			zap.String("service", serviceName),
 			zap.String("actor", actor.Name()),
@@ -246,7 +246,7 @@ func (actor *localActor) increaseIdle() {
 				int64(time.Duration(passed.Second())*time.Second),
 			)
 
-			l.Logger.Debug(
+			GetLog().Debug(
 				"actor idle seconds",
 				zap.String("service", serviceName),
 				zap.String("actor", actor.name),
@@ -267,7 +267,7 @@ func (actor *localActor) startStamp() {
 		actor.db.Start(actor.startTime)
 	}
 
-	l.Logger.Info(
+	GetLog().Info(
 		"actor start time",
 		zap.String("service", serviceName),
 		zap.String("actor", actor.name),
@@ -284,7 +284,7 @@ func (actor *localActor) endStamp() {
 		actor.db.Close()
 	}
 
-	l.Logger.Info(
+	GetLog().Info(
 		"actor end time",
 		zap.String("service", serviceName),
 		zap.String("actor", actor.name),

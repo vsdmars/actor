@@ -8,8 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// Logger is the zap logging service
-var Logger serviceLogger
+var logger serviceLogger
 var origLogger serviceLogger
 
 func init() {
@@ -19,7 +18,7 @@ func init() {
 // LogSync sync logger output
 func LogSync() {
 	// ignore logger Sync error
-	Logger.Sync()
+	logger.Sync()
 }
 
 // SetLogger sets caller provided zap logger
@@ -27,23 +26,23 @@ func LogSync() {
 // reset to service's default logger by passing in nil pointer
 func SetLogger(l *zap.Logger) {
 	if l != nil {
-		Logger.Logger = l
-		Logger.provided = true
+		logger.Logger = l
+		logger.provided = true
 		return
 	}
 
-	Logger = origLogger
+	logger = origLogger
 }
 
 // SetLogLevel sets the service log level
 //
 // noop if caller provides it's own zap logger
 func SetLogLevel(level zapcore.Level) {
-	if Logger.provided {
+	if logger.provided {
 		return
 	}
 
-	Logger.config.Level.SetLevel(level)
+	logger.config.Level.SetLevel(level)
 }
 
 func initLogger() {
@@ -69,6 +68,11 @@ func initLogger() {
 		os.Exit(1)
 	}
 
-	Logger = serviceLogger{mylogger, &config, false}
-	origLogger = Logger
+	logger = serviceLogger{mylogger, &config, false}
+	origLogger = logger
+}
+
+// GetLog gets the current logger
+func GetLog() serviceLogger {
+	return logger
 }

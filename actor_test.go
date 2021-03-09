@@ -49,7 +49,7 @@ func init() {
 	flag.Uint64Var(&msgCnt, "msg", 42000, "number of messages")
 
 	// setup log level
-	actor.SetLogLevel(zap.FatalLevel)
+	actor.SetLoggingLevel(zap.FatalLevel)
 }
 
 func createHandle(
